@@ -33,7 +33,6 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <!-- Prominent "Enter Farm Data" button -->
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <a href="{{ url_for('input_form') }}" class="btn btn-lg btn-primary">Enter Farm Data</a>
@@ -42,29 +41,27 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
+  <!-- Personalized Experience Section -->
   <div class="container my-4">
-    <!-- Overall App Summary Section -->
-<div class="container my-4">
-  <div class="card mb-4 shadow">
-    <div class="card-header bg-primary text-white">
-      <h3 class="mb-0">Farming App Overview</h3>
-    </div>
-    <div class="card-body">
-      <p>
-        Welcome to the Farming App – your personalized companion for modern farming.
-        Our app combines traditional expertise with cutting-edge AI technology to empower you with 
-        data-driven insights and smart recommendations. By entering your farm’s specific data, you receive tailored crop recommendations, 
-        real-time weather updates, and predictive yield analysis to help maximize productivity and sustainability.
-      </p>
-      <p>
-        Whether you're a small-scale grower or manage larger operations, our user-friendly and responsive design 
-        ensures that you have the best farming insights at your fingertips – anytime, anywhere.
-      </p>
+    <div class="card mb-4 shadow">
+      <div class="card-header bg-success text-white">
+        <h3 class="mb-0">{{ personalized_info.greeting }}</h3>
+      </div>
+      <div class="card-body">
+        <p>Your farm conditions:</p>
+        <ul>
+          <li>Soil: {{ personalized_info.soil }} (pH: {{ personalized_info.soil_ph }})</li>
+          <li>Temperature: {{ personalized_info.temperature }} °C</li>
+          <li>Rainfall: {{ personalized_info.rainfall }} mm</li>
+        </ul>
+        <p>Based on your data, here are some personalized recommendations:</p>
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- Features Section -->
+  <div class="container my-4">
+    <h1 class="text-center mb-4">Farming App Features</h1>
     <div class="row">
       {% for feature in features %}
       <div class="col-md-4">

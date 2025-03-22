@@ -33,7 +33,7 @@ class FarmData(db.Model):
 def create_tables():
     db.create_all()
 
-# Extra static info for "Basic Crop Recommendation" including additional data
+# Extra static info for "Basic Crop Recommendation" (mock data)
 basic_crop_recommendation_info = {
     "soil_types": {
         "Sandy": "Recommended Crop: Carrot, due to good drainage and nutrient requirements.",
@@ -78,7 +78,6 @@ basic_crop_recommendation_info = {
             "Last Date": "Late April",
             "Plants": "Shallots, Spinach*, Bok Choy, Parsley; Cabbage Family, Leeks, Onions"
         }
-        # Add more rows as needed.
     ],
     "nutrient_recommendations": [
         {
@@ -101,11 +100,10 @@ basic_crop_recommendation_info = {
             "K High": 60,
             "Other": "Well-drained soil, neutral to slightly alkaline pH."
         }
-        # Add more rows as needed.
     ]
 }
 
-# Static list of features (without complexity)
+# Static list of features (mock data)
 features = [
     {
         "name": "Basic Crop Recommendation",
@@ -211,12 +209,29 @@ features = [
     }
 ]
 
-# Route: Home page (index) remains as before
+# Home route with personalized experience based on latest FarmData entry
 @app.route("/")
 def home():
-    return render_template("index.html", features=features)
+    latest_data = FarmData.query.order_by(FarmData.submitted_at.desc()).first()
+    if latest_data:
+        personalized_info = {
+            "greeting": f"Hello farmer from {latest_data.city}!",
+            "soil": latest_data.soil_type,
+            "soil_ph": latest_data.soil_ph,
+            "temperature": latest_data.temperature,
+            "rainfall": latest_data.rainfall
+        }
+    else:
+        personalized_info = {
+            "greeting": "Hello Farmer!",
+            "soil": "Loamy",
+            "soil_ph": 6.5,
+            "temperature": 20,
+            "rainfall": 100
+        }
+    return render_template("index.html", features=features, personalized_info=personalized_info)
 
-# Route: Feature details page (supports GET and POST for yield prediction)
+# Feature details route (supports GET and POST for yield prediction)
 @app.route("/feature/<name>", methods=["GET", "POST"])
 def feature_details(name):
     feature = next((f for f in features if f['name'] == name), None)
@@ -224,11 +239,9 @@ def feature_details(name):
         return "Feature not found", 404
 
     extra_info = None
-    # For Basic Crop Recommendation, include extra info with crop schedule and nutrient recommendations
     if feature['name'] == "Basic Crop Recommendation":
         extra_info = basic_crop_recommendation_info
 
-    # Real-Time Weather API Integration
     elif feature['name'] == "Real-Time Weather API Integration":
         city = request.args.get("city")
         if not city:
@@ -237,7 +250,7 @@ def feature_details(name):
                 city = latest_data.city
             else:
                 city = "Chester Springs"
-        api_key = "41634f4abed439fd5c63967222a91b8b"  # Your OpenWeatherMap API key
+        api_key = "41634f4abed439fd5c63967222a91b8b"  # OpenWeatherMap API key
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
         response = requests.get(weather_url)
         if response.status_code == 200:
@@ -252,7 +265,14 @@ def feature_details(name):
         else:
             extra_info = {"error": "Could not retrieve weather data"}
 
-    # AI-Based Yield Prediction: Handle GET and POST on this feature page
+    elif feature['name'] == "Supply & Demand Analysis":
+        # Mock data for chart-based visualization
+        extra_info = {
+            "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            "supply": [100, 120, 130, 110, 150, 140, 160, 170, 180, 150, 140, 130],
+            "demand": [90, 110, 120, 100, 140, 130, 150, 160, 170, 140, 130, 120]
+        }
+
     elif feature['name'] == "AI-Based Yield Prediction":
         prediction = None
         prefill = {}
@@ -271,19 +291,19 @@ def feature_details(name):
             except (ValueError, TypeError):
                 prediction = "Invalid input. Please enter numeric values."
             else:
-                # Simulate prediction with a random value (replace with your yield_model.predict later)
+                # Simulate yield prediction with a random value (replace with your model later)
                 pred_value = random.uniform(50, 150)
                 prediction = f"Predicted crop yield: {pred_value:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
 
     return render_template("feature.html", feature=feature, extra_info=extra_info)
 
-# Route: Input form for farmer data (includes city)
+# Input form route for farmer data (includes city)
 @app.route("/input", methods=["GET"])
 def input_form():
     return render_template("input.html")
 
-# Route: Process form submission and save data to the database
+# Process form submission and save data to the database
 @app.route("/submit", methods=["POST"])
 def submit():
     data = FarmData(
@@ -301,7 +321,7 @@ def submit():
     db.session.commit()
     return redirect(url_for('submission', data_id=data.id))
 
-# Route: Display stored submission data
+# Route to display stored submission data
 @app.route("/submission/<int:data_id>")
 def submission(data_id):
     data = FarmData.query.get_or_404(data_id)

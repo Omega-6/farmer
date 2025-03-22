@@ -19,7 +19,7 @@
     .feature-detail {
       margin-top: 50px;
     }
-    .table-responsive {
+    #chart-container {
       margin-top: 20px;
     }
   </style>
@@ -45,10 +45,10 @@
         <h3 class="card-title">{{ feature.name }}</h3>
         <p class="card-text"><strong>Description:</strong> {{ feature.description }}</p>
         <p class="card-text"><strong>Benefit:</strong> {{ feature.benefit }}</p>
+        
         {% if extra_info %}
           {% if feature.name == "Basic Crop Recommendation" %}
             <hr>
-            <!-- Display extra info as accordions -->
             <div class="accordion" id="basicAccordion">
               <div class="card">
                 <div class="card-header" id="headingSoil">
@@ -160,6 +160,7 @@
                 </div>
               </div>
             </div>
+
           {% elif feature.name == "Real-Time Weather API Integration" %}
             <hr>
             {% if extra_info.error %}
@@ -173,6 +174,7 @@
                 <li><strong>Wind Speed:</strong> {{ extra_info.wind_speed }} m/s</li>
               </ul>
             {% endif %}
+
           {% elif feature.name == "AI-Based Yield Prediction" %}
             <hr>
             <h4>Yield Prediction</h4>
@@ -195,7 +197,76 @@
               <div class="alert alert-info mt-4">
                 {{ extra_info.prediction }}
               </div>
+              <!-- Optional: Show a mock trend chart for yield predictions -->
+              <div id="chart-container">
+                <canvas id="yieldChart"></canvas>
+              </div>
+              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              <script>
+                const ctxYield = document.getElementById('yieldChart').getContext('2d');
+                const yieldChart = new Chart(ctxYield, {
+                  type: 'line',
+                  data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                      label: 'Predicted Yield (units)',
+                      data: [100, 110, 105, {{ extra_info.prediction.split(":")[1].split()[0] | float }}],
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      fill: false,
+                      tension: 0.1
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    scales: {
+                      y: { beginAtZero: true }
+                    }
+                  }
+                });
+              </script>
             {% endif %}
+
+          {% elif feature.name == "Supply & Demand Analysis" %}
+            <hr>
+            <h4>Supply & Demand Analysis</h4>
+            <div id="chart-container">
+              <canvas id="supplyDemandChart"></canvas>
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+              const ctxSupply = document.getElementById('supplyDemandChart').getContext('2d');
+              const supplyDemandChart = new Chart(ctxSupply, {
+                type: 'line',
+                data: {
+                  labels: {{ extra_info.labels | safe }},
+                  datasets: [
+                    {
+                      label: 'Supply',
+                      data: {{ extra_info.supply | safe }},
+                      borderColor: 'rgba(75, 192, 192, 1)',
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                      fill: false,
+                      tension: 0.1
+                    },
+                    {
+                      label: 'Demand',
+                      data: {{ extra_info.demand | safe }},
+                      borderColor: 'rgba(255, 99, 132, 1)',
+                      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                      fill: false,
+                      tension: 0.1
+                    }
+                  ]
+                },
+                options: {
+                  responsive: true,
+                  scales: {
+                    y: { beginAtZero: true }
+                  }
+                }
+              });
+            </script>
           {% endif %}
         {% endif %}
         <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Features</a>
