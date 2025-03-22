@@ -19,6 +19,9 @@
     .feature-detail {
       margin-top: 50px;
     }
+    .table-responsive {
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -45,16 +48,17 @@
         {% if extra_info %}
           {% if feature.name == "Basic Crop Recommendation" %}
             <hr>
-            <div class="accordion" id="cropRecommendationAccordion">
+            <!-- Display extra info as accordions -->
+            <div class="accordion" id="basicAccordion">
               <div class="card">
-                <div class="card-header" id="headingDetails">
+                <div class="card-header" id="headingSoil">
                   <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseDetails" aria-expanded="true" aria-controls="collapseDetails">
-                      More Details
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseSoil" aria-expanded="true" aria-controls="collapseSoil">
+                      Soil Types & Weather Conditions
                     </button>
                   </h2>
                 </div>
-                <div id="collapseDetails" class="collapse show" aria-labelledby="headingDetails" data-parent="#cropRecommendationAccordion">
+                <div id="collapseSoil" class="collapse show" aria-labelledby="headingSoil" data-parent="#basicAccordion">
                   <div class="card-body">
                     <h4>Soil Types</h4>
                     <ul>
@@ -74,6 +78,84 @@
                       <li><strong>{{ month }}:</strong> {{ suggestion }}</li>
                       {% endfor %}
                     </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingSchedule">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSchedule" aria-expanded="false" aria-controls="collapseSchedule">
+                      Crop Schedule
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseSchedule" class="collapse" aria-labelledby="headingSchedule" data-parent="#basicAccordion">
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-striped">
+                        <thead>
+                          <tr>
+                            <th>Temperature</th>
+                            <th>First Date</th>
+                            <th>Last Date</th>
+                            <th>Plants</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for row in extra_info.crop_schedule %}
+                          <tr>
+                            <td>{{ row.Temperature }}</td>
+                            <td>{{ row["First Date"] }}</td>
+                            <td>{{ row["Last Date"] }}</td>
+                            <td>{{ row.Plants }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingNutrients">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseNutrients" aria-expanded="false" aria-controls="collapseNutrients">
+                      Nutrient Recommendations
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseNutrients" class="collapse" aria-labelledby="headingNutrients" data-parent="#basicAccordion">
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-sm table-striped">
+                        <thead>
+                          <tr>
+                            <th>Crop</th>
+                            <th>N Low</th>
+                            <th>N High</th>
+                            <th>P Low</th>
+                            <th>P High</th>
+                            <th>K Low</th>
+                            <th>K High</th>
+                            <th>Other Notes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for rec in extra_info.nutrient_recommendations %}
+                          <tr>
+                            <td>{{ rec.Crop }}</td>
+                            <td>{{ rec["N Low"] }}</td>
+                            <td>{{ rec["N High"] }}</td>
+                            <td>{{ rec["P Low"] }}</td>
+                            <td>{{ rec["P High"] }}</td>
+                            <td>{{ rec["K Low"] }}</td>
+                            <td>{{ rec["K High"] }}</td>
+                            <td>{{ rec.Other }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

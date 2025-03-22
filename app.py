@@ -33,6 +33,78 @@ class FarmData(db.Model):
 def create_tables():
     db.create_all()
 
+# Extra static info for "Basic Crop Recommendation" including additional data
+basic_crop_recommendation_info = {
+    "soil_types": {
+        "Sandy": "Recommended Crop: Carrot, due to good drainage and nutrient requirements.",
+        "Loamy": "Recommended Crop: Wheat, as loamy soil is ideal for balanced moisture.",
+        "Clay": "Recommended Crop: Rice, because clay holds water well for paddy fields."
+    },
+    "weather_conditions": {
+        "Sunny": "Recommended Crop: Corn, which thrives in full sun.",
+        "Rainy": "Recommended Crop: Rice, which benefits from abundant water.",
+        "Humid": "Recommended Crop: Soybean, suited for humid climates."
+    },
+    "monthly_suggestions": {
+        "January": "Plant winter-hardy crops like Kale or Cabbage.",
+        "February": "Begin early sowing of Spinach and other leafy greens.",
+        "March": "Start planting spring vegetables such as Lettuce.",
+        "April": "Ideal time for warm-season crops like Tomatoes and Peppers.",
+        "May": "Plant summer crops such as Corn or Beans.",
+        "June": "Ensure proper irrigation for high-demand crops like Cucumbers.",
+        "July": "Monitor for pests and rotate crops if needed.",
+        "August": "Prepare for harvest; consider quick-growing vegetables.",
+        "September": "Start planting fall crops like Broccoli and Cauliflower.",
+        "October": "Adjust for cooler temperatures; plant root vegetables.",
+        "November": "Sow cover crops to improve soil fertility during winter.",
+        "December": "Rest the soil and plan for the next season."
+    },
+    "crop_schedule": [
+        {
+            "Temperature": "Cool",
+            "First Date": "Mid March",
+            "Last Date": "Mid April",
+            "Plants": "Peas, Fava Beans, Onions, Leeks, Garlic, Greens, Turnips, White Potatoes, Cabbage"
+        },
+        {
+            "Temperature": "Cool",
+            "First Date": "Late March",
+            "Last Date": "Mid May",
+            "Plants": "Lettuce*, Radishes*, Beets*, Carrots*"
+        },
+        {
+            "Temperature": "Cool",
+            "First Date": "Late March",
+            "Last Date": "Late April",
+            "Plants": "Shallots, Spinach*, Bok Choy, Parsley; Cabbage Family, Leeks, Onions"
+        }
+        # Add more rows as needed.
+    ],
+    "nutrient_recommendations": [
+        {
+            "Crop": "Peas",
+            "N Low": 30,
+            "N High": 50,
+            "P Low": 20,
+            "P High": 40,
+            "K Low": 40,
+            "K High": 60,
+            "Other": "Prefers slightly acidic to neutral soil (pH 6.0-7.0)."
+        },
+        {
+            "Crop": "Fava Beans",
+            "N Low": 30,
+            "N High": 50,
+            "P Low": 20,
+            "P High": 40,
+            "K Low": 40,
+            "K High": 60,
+            "Other": "Well-drained soil, neutral to slightly alkaline pH."
+        }
+        # Add more rows as needed.
+    ]
+}
+
 # Static list of features (without complexity)
 features = [
     {
@@ -139,35 +211,7 @@ features = [
     }
 ]
 
-# Extra static info for "Basic Crop Recommendation"
-basic_crop_recommendation_info = {
-    "soil_types": {
-        "Sandy": "Recommended Crop: Carrot, due to good drainage and nutrient requirements.",
-        "Loamy": "Recommended Crop: Wheat, as loamy soil is ideal for balanced moisture.",
-        "Clay": "Recommended Crop: Rice, because clay holds water well for paddy fields."
-    },
-    "weather_conditions": {
-        "Sunny": "Recommended Crop: Corn, which thrives in full sun.",
-        "Rainy": "Recommended Crop: Rice, which benefits from abundant water.",
-        "Humid": "Recommended Crop: Soybean, suited for humid climates."
-    },
-    "monthly_suggestions": {
-        "January": "Plant winter-hardy crops like Kale or Cabbage.",
-        "February": "Begin early sowing of Spinach and other leafy greens.",
-        "March": "Start planting spring vegetables such as Lettuce.",
-        "April": "Ideal time for warm-season crops like Tomatoes and Peppers.",
-        "May": "Plant summer crops such as Corn or Beans.",
-        "June": "Ensure proper irrigation for high-demand crops like Cucumbers.",
-        "July": "Monitor for pests and rotate crops if needed.",
-        "August": "Prepare for harvest; consider quick-growing vegetables.",
-        "September": "Start planting fall crops like Broccoli and Cauliflower.",
-        "October": "Adjust for cooler temperatures; plant root vegetables.",
-        "November": "Sow cover crops to improve soil fertility during winter.",
-        "December": "Rest the soil and plan for the next season."
-    }
-}
-
-# Route: Home page
+# Route: Home page (index) remains as before
 @app.route("/")
 def home():
     return render_template("index.html", features=features)
@@ -180,7 +224,7 @@ def feature_details(name):
         return "Feature not found", 404
 
     extra_info = None
-    # Basic Crop Recommendation extra info
+    # For Basic Crop Recommendation, include extra info with crop schedule and nutrient recommendations
     if feature['name'] == "Basic Crop Recommendation":
         extra_info = basic_crop_recommendation_info
 
@@ -208,7 +252,7 @@ def feature_details(name):
         else:
             extra_info = {"error": "Could not retrieve weather data"}
 
-    # AI-Based Yield Prediction: Handle GET and POST in the same feature page
+    # AI-Based Yield Prediction: Handle GET and POST on this feature page
     elif feature['name'] == "AI-Based Yield Prediction":
         prediction = None
         prefill = {}
@@ -227,7 +271,7 @@ def feature_details(name):
             except (ValueError, TypeError):
                 prediction = "Invalid input. Please enter numeric values."
             else:
-                # Simulate prediction with a random value (replace with your model later)
+                # Simulate prediction with a random value (replace with your yield_model.predict later)
                 pred_value = random.uniform(50, 150)
                 prediction = f"Predicted crop yield: {pred_value:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
