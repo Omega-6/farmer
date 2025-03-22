@@ -1,45 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ feature.name }}</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .feature-detail {
-            text-align: center;
-            margin: 20px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            width: 300px;
-            border-radius: 8px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-        }
-        .feature-detail img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-        a {
-            text-decoration: none;
-            color: blue;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>{{ feature.name }}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .feature-detail {
+      margin-top: 50px;
+    }
+    /* Same image styling as index.html */
+    .card-img-top {
+      max-height: 300px;
+      object-fit: contain;
+      width: 100%;
+    }
+  </style>
 </head>
-<body>
-    <div class="feature-detail">
-        <img src="{{ url_for('static', filename='images/' + feature.image) }}" alt="{{ feature.name }}">
-        <h1>{{ feature.name }}</h1>
-        <p><strong>Description:</strong> {{ feature.description }}</p>
-        <p><strong>Benefit:</strong> {{ feature.benefit }}</p>
-        <p><strong>Complexity:</strong> {{ feature.complexity }}</p>
-        <a href="{{ url_for('home') }}">Back to Features</a>
+<body class="bg-light">
+  <div class="container feature-detail">
+    <div class="card">
+      <img src="{{ url_for('static', filename='images/' + feature.image) }}" class="card-img-top img-fluid" alt="{{ feature.name }}">
+      <div class="card-body">
+        <h3 class="card-title">{{ feature.name }}</h3>
+        <p class="card-text"><strong>Description:</strong> {{ feature.description }}</p>
+        <p class="card-text"><strong>Benefit:</strong> {{ feature.benefit }}</p>
+        <p class="card-text"><strong>Complexity:</strong> {{ feature.complexity }}</p>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">Back to Features</a>
+      </div>
     </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
