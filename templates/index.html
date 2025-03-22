@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Farming App Features</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .feature {
+            text-align: center;
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            width: 250px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+        }
+        .feature img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .feature a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <h1>Farming App Features</h1>
+    <div class="container">
+        {% for feature in features %}
+            <div class="feature">
+                <a href="{{ url_for('feature_details', name=feature.name) }}">
+                    <img src="{{ url_for('static', filename='images/' + feature.image) }}" alt="{{ feature.name }}">
+                    <h2>{{ feature.name }}</h2>
+                </a>
+                <p>{{ feature.benefit }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
