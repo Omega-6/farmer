@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submission Received</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+  <div class="container my-4">
+    <h1 class="text-center mb-4">Submission Received</h1>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Your Farm Data</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><strong>Soil Type:</strong> {{ data.soil_type }}</li>
+          <li class="list-group-item"><strong>Soil pH:</strong> {{ data.soil_ph }}</li>
+          <li class="list-group-item"><strong>Soil Moisture:</strong> {{ data.soil_moisture }}%</li>
+          <li class="list-group-item"><strong>Temperature:</strong> {{ data.temperature }} °C</li>
+          <li class="list-group-item"><strong>Rainfall:</strong> {{ data.rainfall }} mm</li>
+          <li class="list-group-item"><strong>Crop History:</strong> {{ data.crop_history }}</li>
+          <li class="list-group-item"><strong>Fertilizer Usage:</strong> {{ data.fertilizer_usage }}</li>
+          <li class="list-group-item"><strong>Pest/Disease Issues:</strong> {{ data.pest_issues }}</li>
+        </ul>
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

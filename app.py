@@ -1,129 +1,168 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, request, url_for, redirect
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Full list of features with static image filenames
+# Configure SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///farmdata.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Define a model to store farmer data
+class FarmData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    soil_type = db.Column(db.String(50))
+    soil_ph = db.Column(db.Float)
+    soil_moisture = db.Column(db.Float)
+    temperature = db.Column(db.Float)
+    rainfall = db.Column(db.Float)
+    crop_history = db.Column(db.Text)
+    fertilizer_usage = db.Column(db.Text)
+    pest_issues = db.Column(db.Text)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<FarmData {self.id}>'
+
+# Ensure the tables are created before each request (development use only)
+@app.before_request
+def create_tables():
+    db.create_all()
+
+# Static list of features (without complexity)
 features = [
     {
         "name": "Basic Crop Recommendation",
         "description": "Suggests the best crop based on soil type, weather, and month.",
         "benefit": "Helps farmers choose the right crop for higher yield & profit.",
-        "complexity": "✅ Simple",
         "image": "basic_crop.png"
     },
     {
         "name": "Government Aid & Subsidy Info",
         "description": "Provides a list of available farming subsidies based on region.",
         "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.",
-        "complexity": "✅ Simple",
         "image": "gov_aid.png"
     },
     {
         "name": "Soil Health Monitoring (Manual Input)",
         "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.",
         "benefit": "Prevents soil degradation and boosts long-term productivity.",
-        "complexity": "✅ Simple",
         "image": "soil_health.png"
     },
     {
         "name": "Market Price Alerts (Static Data)",
         "description": "Displays current crop prices from a stored dataset.",
         "benefit": "Helps farmers decide when to sell crops for maximum profit.",
-        "complexity": "✅ Simple",
         "image": "market_price_static.png"
     },
     {
         "name": "Crop Rotation Planning",
         "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.",
         "benefit": "Prevents soil depletion and increases productivity.",
-        "complexity": "✅ Medium",
         "image": "crop_rotation.png"
     },
     {
         "name": "Real-Time Weather API Integration",
         "description": "Fetch live weather data from OpenWeatherMap API.",
         "benefit": "Provides accurate climate data for better crop selection.",
-        "complexity": "⚡ Medium",
         "image": "weather_api.png"
     },
     {
         "name": "Rainfall & Temperature Prediction",
         "description": "Uses historical weather trends to estimate future rainfall & temperature.",
         "benefit": "Farmers can plan irrigation & planting effectively.",
-        "complexity": "⚡ Medium",
         "image": "rainfall_temperature.png"
     },
     {
         "name": "Fertilizer & Water Usage Recommendations",
         "description": "Suggests the best fertilizer & irrigation methods for each crop.",
         "benefit": "Saves money & resources while ensuring healthy crops.",
-        "complexity": "⚡ Medium",
         "image": "fertilizer_water.png"
     },
     {
         "name": "Pest & Disease Alerts (Based on Season & Location)",
         "description": "Notifies farmers of pest infestations & diseases in their region.",
         "benefit": "Reduces crop loss by taking preventive measures in advance.",
-        "complexity": "⚡ Medium",
         "image": "pest_disease.png"
     },
     {
         "name": "Supply & Demand Analysis",
         "description": "Shows which crops are in high demand in different regions.",
         "benefit": "Prevents overproduction of low-demand crops & reduces waste.",
-        "complexity": "⚡ Medium",
         "image": "supply_demand.png"
     },
     {
         "name": "Market Price Alerts (Real-Time API Integration)",
         "description": "Uses APIs like USDA to fetch live crop prices from markets.",
         "benefit": "Farmers can sell crops at the best price.",
-        "complexity": "🚀 Advanced",
         "image": "market_price_api.png"
     },
     {
         "name": "Harvest Time Optimization",
         "description": "Recommends best harvesting time based on weather & market trends.",
         "benefit": "Maximizes profit & crop quality.",
-        "complexity": "🚀 Advanced",
         "image": "harvest_optimization.png"
     },
     {
         "name": "Drought & Flood Warnings",
         "description": "Alerts farmers about climate risks like droughts or floods.",
         "benefit": "Allows early prevention & crop protection strategies.",
-        "complexity": "🚀 Advanced",
         "image": "drought_flood.png"
     },
     {
         "name": "Cooperative Farming Suggestions",
         "description": "Suggests nearby farmers growing similar crops for bulk selling.",
         "benefit": "Helps farmers negotiate better prices & reduce costs.",
-        "complexity": "🚀 Advanced",
         "image": "cooperative_farming.png"
     },
     {
         "name": "AI-Based Yield Prediction",
         "description": "Uses machine learning to predict crop yield based on weather, soil, and planting time.",
         "benefit": "Helps farmers make data-driven decisions to improve productivity.",
-        "complexity": "🚀 Complex",
         "image": "ai_yield.png"
     },
     {
         "name": "Automated Crop Insurance Recommendations",
         "description": "Suggests insurance plans based on crop & risk factors.",
         "benefit": "Protects farmers from financial loss due to bad weather.",
-        "complexity": "🚀 Complex",
         "image": "crop_insurance.png"
     },
     {
         "name": "Integration with IoT Sensors",
         "description": "Connects to soil moisture & temperature sensors for real-time data collection.",
         "benefit": "Helps in precision farming, reducing water & fertilizer wastage.",
-        "complexity": "🚀 Complex",
         "image": "iot_sensors.png"
     }
 ]
+
+# Extra static info for "Basic Crop Recommendation"
+basic_crop_recommendation_info = {
+    "soil_types": {
+        "Sandy": "Recommended Crop: Carrot, due to good drainage and nutrient requirements.",
+        "Loamy": "Recommended Crop: Wheat, as loamy soil is ideal for balanced moisture.",
+        "Clay": "Recommended Crop: Rice, because clay holds water well for paddy fields."
+    },
+    "weather_conditions": {
+        "Sunny": "Recommended Crop: Corn, which thrives in full sun.",
+        "Rainy": "Recommended Crop: Rice, which benefits from abundant water.",
+        "Humid": "Recommended Crop: Soybean, suited for humid climates."
+    },
+    "monthly_suggestions": {
+        "January": "Plant winter-hardy crops like Kale or Cabbage.",
+        "February": "Begin early sowing of Spinach and other leafy greens.",
+        "March": "Start planting spring vegetables such as Lettuce.",
+        "April": "Ideal time for warm-season crops like Tomatoes and Peppers.",
+        "May": "Plant summer crops such as Corn or Beans.",
+        "June": "Ensure proper irrigation for high-demand crops like Cucumbers.",
+        "July": "Monitor for pests and rotate crops if needed.",
+        "August": "Prepare for harvest; consider quick-growing vegetables.",
+        "September": "Start planting fall crops like Broccoli and Cauliflower.",
+        "October": "Adjust for cooler temperatures; plant root vegetables.",
+        "November": "Sow cover crops to improve soil fertility during winter.",
+        "December": "Rest the soil and plan for the next season."
+    }
+}
 
 @app.route("/")
 def home():
@@ -133,8 +172,41 @@ def home():
 def feature_details(name):
     feature = next((f for f in features if f['name'] == name), None)
     if feature:
-        return render_template("feature.html", feature=feature)
+        extra_info = None
+        if feature['name'] == "Basic Crop Recommendation":
+            extra_info = basic_crop_recommendation_info
+        return render_template("feature.html", feature=feature, extra_info=extra_info)
     return "Feature not found", 404
 
+# Route to display the input form
+@app.route("/input", methods=["GET"])
+def input_form():
+    return render_template("input.html")
+
+# Route to process the form submission and save to database
+@app.route("/submit", methods=["POST"])
+def submit():
+    data = FarmData(
+        soil_type = request.form.get("soil_type"),
+        soil_ph = float(request.form.get("soil_ph") or 0),
+        soil_moisture = float(request.form.get("soil_moisture") or 0),
+        temperature = float(request.form.get("temperature") or 0),
+        rainfall = float(request.form.get("rainfall") or 0),
+        crop_history = request.form.get("crop_history"),
+        fertilizer_usage = request.form.get("fertilizer_usage"),
+        pest_issues = request.form.get("pest_issues")
+    )
+    db.session.add(data)
+    db.session.commit()
+    return redirect(url_for('submission', data_id=data.id))
+
+# Route to display the stored submission data
+@app.route("/submission/<int:data_id>")
+def submission(data_id):
+    data = FarmData.query.get_or_404(data_id)
+    return render_template("submission.html", data=data)
+
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
