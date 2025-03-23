@@ -7,7 +7,7 @@
 </head>
 <body class="bg-light">
   <div class="container my-4">
-    <h1 class="text-center mb-4">Submission Received</h1>
+    <h1 class="text-center">Submission Received</h1>
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Your Farm Data</h5>
@@ -22,7 +22,9 @@
           <li class="list-group-item"><strong>Fertilizer Usage:</strong> {{ data.fertilizer_usage }}</li>
           <li class="list-group-item"><strong>Pest/Disease Issues:</strong> {{ data.pest_issues }}</li>
         </ul>
-        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Home</a>
+        <div class="text-center mt-3">
+          <a href="{{ url_for('input_form') }}" class="btn btn-secondary">Enter New Data</a>
+        </div>
       </div>
     </div>
   </div>

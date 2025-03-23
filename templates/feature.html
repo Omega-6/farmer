@@ -8,7 +8,7 @@
     .footer {
       padding: 20px;
       text-align: center;
-      background-color: #f1f1f1;
+      background-color: #BFF4BE;
       margin-top: 20px;
     }
     .card-img-top {
@@ -19,257 +19,210 @@
     .feature-detail {
       margin-top: 50px;
     }
-    #chart-container {
-      margin-top: 20px;
+    .info-section {
+      margin-top: 30px;
+    }
+    .highlighted {
+      color: #d9534f; /* Bootstrap's danger color, you can change it */
+      font-weight: bold;
     }
   </style>
 </head>
 <body class="bg-light">
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbar">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="{{ url_for('home') }}">Farming App</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" 
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <!-- Additional navbar items if needed -->
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a href="{{ url_for('input_form') }}" class="btn btn-primary">Enter Farm Data</a>
+        </li>
+      </ul>
     </div>
   </nav>
 
-  <!-- Main Content -->
+  <!-- Feature Details Section -->
   <div class="container feature-detail">
-    <div class="card">
-      <img src="{{ url_for('static', filename='images/' + feature.image) }}" class="card-img-top img-fluid" alt="{{ feature.name }}">
+    <div class="card mb-4">
+      <img src="{{ url_for('static', filename='images/' + feature.image) }}" class="card-img-top" alt="{{ feature.name }}">
       <div class="card-body">
         <h3 class="card-title">{{ feature.name }}</h3>
         <p class="card-text"><strong>Description:</strong> {{ feature.description }}</p>
         <p class="card-text"><strong>Benefit:</strong> {{ feature.benefit }}</p>
         
-        {% if extra_info %}
-          {% if feature.name == "Basic Crop Recommendation" %}
+        {% if feature.name == "Basic Crop Recommendation" %}
+          <hr>
+          <div class="info-section">
+            <h4>Static Information</h4>
+            <p>
+              <strong>Soil Types</strong><br>
+              Sandy: Recommended Crop: Carrot, due to good drainage and nutrient requirements.<br>
+              Loamy: Recommended Crop: Wheat, as loamy soil is ideal for balanced moisture.<br>
+              Clay: Recommended Crop: Rice, because clay holds water well for paddy fields.
+            </p>
+            <p>
+              <strong>Weather Conditions</strong><br>
+              Sunny: Recommended Crop: Corn, which thrives in full sun.<br>
+              Rainy: Recommended Crop: Rice, which benefits from abundant water.<br>
+              Humid: Recommended Crop: Soybean, suited for humid climates.
+            </p>
+            <p>
+              <strong>Monthly Suggestions</strong><br>
+              January: Plant winter-hardy crops like Kale or Cabbage.<br>
+              February: Begin early sowing of Spinach and other leafy greens.<br>
+              March: Start planting spring vegetables such as Lettuce.<br>
+              April: Ideal time for warm-season crops like Tomatoes and Peppers.<br>
+              May: Plant summer crops such as Corn or Beans.<br>
+              June: Ensure proper irrigation for high-demand crops like Cucumbers.<br>
+              July: Monitor for pests and rotate crops if needed.<br>
+              August: Prepare for harvest; consider quick-growing vegetables.<br>
+              September: Start planting fall crops like Broccoli and Cauliflower.<br>
+              October: Adjust for cooler temperatures; plant root vegetables.<br>
+              November: Sow cover crops to improve soil fertility during winter.<br>
+              December: Rest the soil and plan for the next season.
+            </p>
+            <h4>Crop Schedule</h4>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Temperature</th>
+                  <th>First Date</th>
+                  <th>Last Date</th>
+                  <th>Plants</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in extra_info.crop_schedule %}
+                <tr>
+                  <td>{{ row["Temperature"] }}</td>
+                  <td>{{ row["First Date"] }}</td>
+                  <td>{{ row["Last Date"] }}</td>
+                  <td>{{ row["Plants"] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <h4>Nutrient Recommendations</h4>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>N Low</th>
+                  <th>N High</th>
+                  <th>P Low</th>
+                  <th>P High</th>
+                  <th>K Low</th>
+                  <th>K High</th>
+                  <th>Other Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rec in extra_info.nutrient_recommendations %}
+                <tr>
+                  <td>{{ rec["Crop"] }}</td>
+                  <td>{{ rec["N Low"] }}</td>
+                  <td>{{ rec["N High"] }}</td>
+                  <td>{{ rec["P Low"] }}</td>
+                  <td>{{ rec["P High"] }}</td>
+                  <td>{{ rec["K Low"] }}</td>
+                  <td>{{ rec["K High"] }}</td>
+                  <td>{{ rec["Other"] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% if extra_info.finalSuggestions %}
             <hr>
-            <div class="accordion" id="basicAccordion">
-              <div class="card">
-                <div class="card-header" id="headingSoil">
-                  <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseSoil" aria-expanded="true" aria-controls="collapseSoil">
-                      Soil Types & Weather Conditions
-                    </button>
-                  </h2>
-                </div>
-                <div id="collapseSoil" class="collapse show" aria-labelledby="headingSoil" data-parent="#basicAccordion">
-                  <div class="card-body">
-                    <h4>Soil Types</h4>
-                    <ul>
-                      {% for soil, rec in extra_info.soil_types.items() %}
-                      <li><strong>{{ soil }}:</strong> {{ rec }}</li>
-                      {% endfor %}
-                    </ul>
-                    <h4>Weather Conditions</h4>
-                    <ul>
-                      {% for condition, rec in extra_info.weather_conditions.items() %}
-                      <li><strong>{{ condition }}:</strong> {{ rec }}</li>
-                      {% endfor %}
-                    </ul>
-                    <h4>Monthly Suggestions</h4>
-                    <ul>
-                      {% for month, suggestion in extra_info.monthly_suggestions.items() %}
-                      <li><strong>{{ month }}:</strong> {{ suggestion }}</li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header" id="headingSchedule">
-                  <h2 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseSchedule" aria-expanded="false" aria-controls="collapseSchedule">
-                      Crop Schedule
-                    </button>
-                  </h2>
-                </div>
-                <div id="collapseSchedule" class="collapse" aria-labelledby="headingSchedule" data-parent="#basicAccordion">
-                  <div class="card-body">
-                    <div class="table-responsive">
-                      <table class="table table-sm table-striped">
-                        <thead>
-                          <tr>
-                            <th>Temperature</th>
-                            <th>First Date</th>
-                            <th>Last Date</th>
-                            <th>Plants</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for row in extra_info.crop_schedule %}
-                          <tr>
-                            <td>{{ row.Temperature }}</td>
-                            <td>{{ row["First Date"] }}</td>
-                            <td>{{ row["Last Date"] }}</td>
-                            <td>{{ row.Plants }}</td>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card">
-                <div class="card-header" id="headingNutrients">
-                  <h2 class="mb-0">
-                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseNutrients" aria-expanded="false" aria-controls="collapseNutrients">
-                      Nutrient Recommendations
-                    </button>
-                  </h2>
-                </div>
-                <div id="collapseNutrients" class="collapse" aria-labelledby="headingNutrients" data-parent="#basicAccordion">
-                  <div class="card-body">
-                    <div class="table-responsive">
-                      <table class="table table-sm table-striped">
-                        <thead>
-                          <tr>
-                            <th>Crop</th>
-                            <th>N Low</th>
-                            <th>N High</th>
-                            <th>P Low</th>
-                            <th>P High</th>
-                            <th>K Low</th>
-                            <th>K High</th>
-                            <th>Other Notes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for rec in extra_info.nutrient_recommendations %}
-                          <tr>
-                            <td>{{ rec.Crop }}</td>
-                            <td>{{ rec["N Low"] }}</td>
-                            <td>{{ rec["N High"] }}</td>
-                            <td>{{ rec["P Low"] }}</td>
-                            <td>{{ rec["P High"] }}</td>
-                            <td>{{ rec["K Low"] }}</td>
-                            <td>{{ rec["K High"] }}</td>
-                            <td>{{ rec.Other }}</td>
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          {% elif feature.name == "Real-Time Weather API Integration" %}
-            <hr>
-            {% if extra_info.error %}
-              <p>{{ extra_info.error }}</p>
-            {% else %}
-              <h4>Current Weather in {{ extra_info.city }}</h4>
-              <ul>
-                <li><strong>Description:</strong> {{ extra_info.description }}</li>
-                <li><strong>Temperature:</strong> {{ extra_info.temperature }} °C</li>
-                <li><strong>Humidity:</strong> {{ extra_info.humidity }}%</li>
-                <li><strong>Wind Speed:</strong> {{ extra_info.wind_speed }} m/s</li>
-              </ul>
-            {% endif %}
-
-          {% elif feature.name == "AI-Based Yield Prediction" %}
-            <hr>
-            <h4>Yield Prediction</h4>
-            <form method="post">
-              <div class="form-group">
-                <label for="temperature">Temperature (°C)</label>
-                <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" placeholder="Enter temperature" value="{{ extra_info.prefill.temperature if extra_info.prefill.temperature is defined else '' }}" required>
-              </div>
-              <div class="form-group">
-                <label for="rainfall">Rainfall (mm)</label>
-                <input type="number" step="0.1" class="form-control" id="rainfall" name="rainfall" placeholder="Enter rainfall" value="{{ extra_info.prefill.rainfall if extra_info.prefill.rainfall is defined else '' }}" required>
-              </div>
-              <div class="form-group">
-                <label for="soil_ph">Soil pH</label>
-                <input type="number" step="0.1" class="form-control" id="soil_ph" name="soil_ph" placeholder="Enter soil pH" value="{{ extra_info.prefill.soil_ph if extra_info.prefill.soil_ph is defined else '' }}" required>
-              </div>
-              <button type="submit" class="btn btn-primary">Predict Yield</button>
-            </form>
-            {% if extra_info.prediction %}
-              <div class="alert alert-info mt-4">
-                {{ extra_info.prediction }}
-              </div>
-              <!-- Optional: Show a mock trend chart for yield predictions -->
-              <div id="chart-container">
-                <canvas id="yieldChart"></canvas>
-              </div>
-              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-              <script>
-                const ctxYield = document.getElementById('yieldChart').getContext('2d');
-                const yieldChart = new Chart(ctxYield, {
-                  type: 'line',
-                  data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    datasets: [{
-                      label: 'Predicted Yield (units)',
-                      data: [100, 110, 105, {{ extra_info.prediction.split(":")[1].split()[0] | float }}],
-                      borderColor: 'rgba(75, 192, 192, 1)',
-                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                      fill: false,
-                      tension: 0.1
-                    }]
-                  },
-                  options: {
-                    responsive: true,
-                    scales: {
-                      y: { beginAtZero: true }
-                    }
-                  }
-                });
-              </script>
-            {% endif %}
-
-          {% elif feature.name == "Supply & Demand Analysis" %}
-            <hr>
-            <h4>Supply & Demand Analysis</h4>
-            <div id="chart-container">
-              <canvas id="supplyDemandChart"></canvas>
-            </div>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script>
-              const ctxSupply = document.getElementById('supplyDemandChart').getContext('2d');
-              const supplyDemandChart = new Chart(ctxSupply, {
-                type: 'line',
-                data: {
-                  labels: {{ extra_info.labels | safe }},
-                  datasets: [
-                    {
-                      label: 'Supply',
-                      data: {{ extra_info.supply | safe }},
-                      borderColor: 'rgba(75, 192, 192, 1)',
-                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                      fill: false,
-                      tension: 0.1
-                    },
-                    {
-                      label: 'Demand',
-                      data: {{ extra_info.demand | safe }},
-                      borderColor: 'rgba(255, 99, 132, 1)',
-                      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                      fill: false,
-                      tension: 0.1
-                    }
-                  ]
-                },
-                options: {
-                  responsive: true,
-                  scales: {
-                    y: { beginAtZero: true }
-                  }
-                }
-              });
-            </script>
+            <h4><span class="highlighted">Your Personalized Crop Suggestions:</span></h4>
+            <ul class="list-group">
+              {% for crop in extra_info.finalSuggestions %}
+                <li class="list-group-item">{{ crop }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">No personalized suggestions available. Please submit your farm data.</p>
           {% endif %}
+        
+        {% elif feature.name == "Real-Time Weather API Integration" %}
+          <hr>
+          {% if extra_info.error %}
+            <div class="alert alert-danger">{{ extra_info.error }}</div>
+          {% else %}
+            <h4>Current Weather in {{ extra_info.city }}</h4>
+            <ul class="list-group">
+              <li class="list-group-item"><strong>Description:</strong> {{ extra_info.description }}</li>
+              <li class="list-group-item"><strong>Temperature:</strong> {{ extra_info.temperature }} °C</li>
+              <li class="list-group-item"><strong>Humidity:</strong> {{ extra_info.humidity }}%</li>
+              <li class="list-group-item"><strong>Wind Speed:</strong> {{ extra_info.wind_speed }} m/s</li>
+            </ul>
+          {% endif %}
+        
+        {% elif feature.name == "AI-Based Yield Prediction" %}
+          <hr>
+          <h4>Yield Prediction</h4>
+          <form method="post">
+            <div class="form-group">
+              <label for="temperature">Temperature (°C)</label>
+              <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" placeholder="Enter temperature" value="{{ extra_info.prefill.temperature if extra_info.prefill.temperature is defined else '' }}" required>
+            </div>
+            <div class="form-group">
+              <label for="rainfall">Rainfall (mm)</label>
+              <input type="number" step="0.1" class="form-control" id="rainfall" name="rainfall" placeholder="Enter rainfall" value="{{ extra_info.prefill.rainfall if extra_info.prefill.rainfall is defined else '' }}" required>
+            </div>
+            <div class="form-group">
+              <label for="soil_ph">Soil pH</label>
+              <input type="number" step="0.1" class="form-control" id="soil_ph" name="soil_ph" placeholder="Enter soil pH" value="{{ extra_info.prefill.soil_ph if extra_info.prefill.soil_ph is defined else '' }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Predict Yield</button>
+          </form>
+          {% if extra_info.prediction %}
+            <div class="alert alert-info mt-4">{{ extra_info.prediction }}</div>
+          {% endif %}
+        
+        {% elif feature.name == "Supply & Demand Analysis" %}
+          <hr>
+          <h4>Supply & Demand Analysis</h4>
+          <div id="chart-container">
+            <canvas id="supplyDemandChart"></canvas>
+          </div>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          <script>
+            const ctxSupply = document.getElementById('supplyDemandChart').getContext('2d');
+            const supplyDemandChart = new Chart(ctxSupply, {
+              type: 'line',
+              data: {
+                labels: {{ extra_info.labels | safe }},
+                datasets: [
+                  {
+                    label: 'Supply',
+                    data: {{ extra_info.supply | safe }},
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false,
+                    tension: 0.1
+                  },
+                  {
+                    label: 'Demand',
+                    data: {{ extra_info.demand | safe }},
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: false,
+                    tension: 0.1
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  y: { beginAtZero: true }
+                }
+              }
+            });
+          </script>
         {% endif %}
-        <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Back to Features</a>
+
+        <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>
       </div>
     </div>
   </div>
@@ -279,7 +232,6 @@
     <p>&copy; 2025 Farming App. All Rights Reserved.</p>
   </div>
 
-  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
