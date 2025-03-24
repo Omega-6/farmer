@@ -185,6 +185,38 @@
             <p class="text-muted">No personalized suggestions available. Please submit your farm data.</p>
           {% endif %}
         
+        {% elif feature.name == "Market Price Alerts" %}
+          <hr>
+          <div class="info-section">
+            <h4>Current Market Prices</h4>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>Price ($ per unit)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for crop, price in extra_info.market_prices.items() %}
+                <tr>
+                  <td>{{ crop }}</td>
+                  <td>{{ price }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% if extra_info.personalized_suggestions %}
+              <h4 class="highlighted">Personalized Suggestions</h4>
+              <ul class="list-group">
+                {% for suggestion in extra_info.personalized_suggestions %}
+                <li class="list-group-item">{{ suggestion }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted">No personalized suggestions available. Please update your crop history.</p>
+            {% endif %}
+          </div>
+        
         {% elif feature.name == "Real-Time Weather API Integration" %}
           <hr>
           {% if extra_info.error %}
@@ -282,7 +314,6 @@
               <p>No soil data available. Please submit your farm data.</p>
             {% endif %}
           </div>
-        
         {% endif %}
         
         <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>

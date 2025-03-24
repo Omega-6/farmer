@@ -117,7 +117,7 @@ features = [
     {"name": "Basic Crop Recommendation", "description": "Suggests the best crop based on soil type, weather, and month.", "benefit": "Helps farmers choose the right crop for higher yield & profit.", "image": "basic_crop.png"},
     {"name": "Government Aid & Subsidy Info", "description": "Provides a list of available farming subsidies based on region.", "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.", "image": "gov_aid.png"},
     {"name": "Soil Health Monitoring", "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.", "benefit": "Prevents soil degradation and boosts long-term productivity.", "image": "soil_health.png"},
-    {"name": "Market Price Alerts (Static Data)", "description": "Displays current crop prices from a stored dataset.", "benefit": "Helps farmers decide when to sell crops for maximum profit.", "image": "market_price_static.png"},
+    {"name": "Market Price Alerts", "description": "Displays current crop prices from a stored dataset.", "benefit": "Helps farmers decide when to sell crops for maximum profit.", "image": "market_price_static.png"},
     {"name": "Crop Rotation Planning", "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.", "benefit": "Prevents soil depletion and increases productivity.", "image": "crop_rotation.png"},
     {"name": "Real-Time Weather API Integration", "description": "Fetch live weather data from OpenWeatherMap API.", "benefit": "Provides accurate climate data for better crop selection.", "image": "weather_api.png"},
     {"name": "Rainfall & Temperature Prediction", "description": "Uses historical weather trends to estimate future rainfall & temperature.", "benefit": "Farmers can plan irrigation & planting effectively.", "image": "rainfall_temperature.png"},
@@ -278,6 +278,37 @@ def feature_details(name):
         else:
             recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
         extra_info = {"recommendations": recommendations}
+    elif feature['name'] == "Market Price Alerts":
+    # Simulate a static dataset for market prices (replace with your actual dataset if available)
+        market_prices = {
+        "Corn": 3.25,
+        "Wheat": 5.10,
+        "Soybean": 9.50,
+        "Rice": 0.90
+        }
+        extra_info = {"market_prices": market_prices}
+    
+        # Personalized suggestions based on the farmer's crop history
+        personalized_suggestions = []
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        if latest_data and latest_data.crop_history:
+        # Assume crop_history is stored as a comma-separated string
+            crops = [crop.strip() for crop in latest_data.crop_history.split(",")]
+            for crop in crops:
+                if crop in market_prices:
+                    price = market_prices[crop]
+                    # Customize thresholds per crop (these are arbitrary for demonstration)
+                    if crop == "Corn" and price > 3.0:
+                     personalized_suggestions.append(f"{crop}: Current price ${price} is above average; consider selling soon!")
+                    elif crop == "Wheat" and price > 4.5:
+                        personalized_suggestions.append(f"{crop}: Current price ${price} is attractive; consider selling.")
+                    elif crop == "Soybean" and price > 8.0:
+                        personalized_suggestions.append(f"{crop}: Current price ${price} is high; consider selling.")
+                    elif crop == "Rice" and price > 1.0:
+                        personalized_suggestions.append(f"{crop}: Current price ${price} is favorable; think about selling.")
+                    else:
+                        personalized_suggestions.append(f"{crop}: Current price ${price} is moderate; keep monitoring.")
+        extra_info["personalized_suggestions"] = personalized_suggestions
     
     return render_template("feature.html", feature=feature, extra_info=extra_info)
 
