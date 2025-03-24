@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Ensure proper scaling on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Farming App Features</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -29,10 +30,19 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="{{ url_for('home') }}">Farming App</a>
-    <div class="collapse navbar-collapse">
+    <!-- Navbar toggler for mobile -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a href="{{ url_for('input_form') }}" class="btn btn-lg btn-primary">Enter Farm Data</a>
+          <!-- For mobile devices, use a full-width button -->
+          <a href="{{ url_for('input_form') }}" class="btn btn-lg btn-primary btn-block d-lg-none">Enter Farm Data</a>
+          <!-- For larger screens, use an inline button -->
+          <a href="{{ url_for('input_form') }}" class="btn btn-lg btn-primary d-none d-lg-inline">Enter Farm Data</a>
         </li>
       </ul>
     </div>
@@ -79,6 +89,8 @@
   <div class="footer">
     <p>&copy; 2025 Farming App. All Rights Reserved.</p>
   </div>
+
+  <!-- Bootstrap and jQuery Scripts -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
