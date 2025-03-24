@@ -116,7 +116,7 @@ basic_crop_recommendation_info = {
 features = [
     {"name": "Basic Crop Recommendation", "description": "Suggests the best crop based on soil type, weather, and month.", "benefit": "Helps farmers choose the right crop for higher yield & profit.", "image": "basic_crop.png"},
     {"name": "Government Aid & Subsidy Info", "description": "Provides a list of available farming subsidies based on region.", "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.", "image": "gov_aid.png"},
-    {"name": "Soil Health Monitoring (Manual Input)", "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.", "benefit": "Prevents soil degradation and boosts long-term productivity.", "image": "soil_health.png"},
+    {"name": "Soil Health Monitoring", "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.", "benefit": "Prevents soil degradation and boosts long-term productivity.", "image": "soil_health.png"},
     {"name": "Market Price Alerts (Static Data)", "description": "Displays current crop prices from a stored dataset.", "benefit": "Helps farmers decide when to sell crops for maximum profit.", "image": "market_price_static.png"},
     {"name": "Crop Rotation Planning", "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.", "benefit": "Prevents soil depletion and increases productivity.", "image": "crop_rotation.png"},
     {"name": "Real-Time Weather API Integration", "description": "Fetch live weather data from OpenWeatherMap API.", "benefit": "Provides accurate climate data for better crop selection.", "image": "weather_api.png"},
@@ -157,7 +157,6 @@ def home():
         }
     return render_template("index.html", features=features, personalized_info=personalized_info)
 
-# Feature details route: Display extra info for the selected feature
 @app.route("/feature/<name>", methods=["GET", "POST"])
 def feature_details(name):
     feature = next((f for f in features if f['name'] == name), None)
@@ -165,6 +164,7 @@ def feature_details(name):
         return "Feature not found", 404
 
     extra_info = None
+
     if feature['name'] == "Basic Crop Recommendation":
         extra_info = basic_crop_recommendation_info.copy()
         # Retrieve personalized suggestions for this user from the latest FarmData entry
@@ -221,6 +221,74 @@ def feature_details(name):
                 prediction = f"Predicted crop yield: {pred_value:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
     
+    elif feature['name'] == "Government Aid & Subsidy Info":
+        # New branch: Provide detailed info and useful links for PA
+        extra_info = {
+            "gov_info": """
+                <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
+                <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness, supporting rural development, and helping farmers modernize their operations. Through the Pennsylvania Department of Agriculture’s Agricultural Business Development Center, farmers can access:</p>
+                <ul>
+                    <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans to help with equipment upgrades, production expansion, and risk mitigation.</li>
+                    <li><strong>Grant Programs & Financial Assistance:</strong> Competitive grants for business planning, infrastructure improvements, and adopting sustainable practices.</li>
+                    <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management, marketing, and best agricultural practices to maximize productivity and profitability.</li>
+                    <li><strong>Disaster Assistance:</strong> Targeted programs for emergency support during severe weather or natural disasters.</li>
+                </ul>
+                <p>Additional resources:</p>
+                <ul>
+                    <li><a href="https://www.pa.gov/agencies/pda/business-and-industry/agricultural-business-development-center/financial-assistance.html" target="_blank">PA Agricultural Business Development Center - Financial Assistance</a></li>
+                    <li><a href="https://www.fsa.usda.gov/" target="_blank">USDA Farm Service Agency</a></li>
+                    <li><a href="https://www.agriculture.pa.gov/" target="_blank">Pennsylvania Department of Agriculture</a></li>
+                </ul>
+            """
+        }
+ 
+    elif feature['name'] == "Soil Health Monitoring":
+    # Retrieve the latest farm data for this user (if available)
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        recommendations = []
+    # Example thresholds (adjust as needed)
+    if latest_data:
+        optimal_ph_range = (6.0, 7.0)
+        optimal_moisture = 30  # percentage
+
+        # Soil pH recommendations
+        if latest_data.soil_ph < optimal_ph_range[0]:
+            recommendations.append(
+                "Soil pH is low (acidic). Consider applying lime to raise the pH. For more details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
+            )
+        elif latest_data.soil_ph > optimal_ph_range[1]:
+            recommendations.append(
+                "Soil pH is high (alkaline). Consider adding elemental sulfur or organic matter to lower the pH. Consult your local cooperative extension for recommendations."
+            )
+        else:
+            recommendations.append("Soil pH is within the optimal range.")
+
+        # Soil moisture recommendations
+        if latest_data.soil_moisture < optimal_moisture:
+            recommendations.append(
+                "Soil moisture is low. Increase irrigation, incorporate organic mulches, or use cover crops to help retain moisture. See the <a href='https://www.fsa.usda.gov/' target='_blank'>USDA Soil Conservation</a> resources."
+            )
+        elif latest_data.soil_moisture > optimal_moisture:
+            recommendations.append(
+                "Soil moisture is high. Consider improved drainage solutions such as raised beds or drainage tiles to prevent waterlogging."
+            )
+        else:
+            recommendations.append("Soil moisture is optimal.")
+
+        # Additional organic matter & nutrient recommendations
+        recommendations.append(
+            "Regularly add compost or manure to improve soil structure and nutrient availability. The <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> offers great insights on organic matter management."
+        )
+        recommendations.append(
+            "Consider planting cover crops and using crop rotation strategies to enhance soil fertility and reduce erosion. Check out the <a href='https://www.sare.org/' target='_blank'>SARE</a> website for detailed guidelines."
+        )
+    else:
+        recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
+    
+    extra_info = {"recommendations": recommendations}
+    
+        
+        
     return render_template("feature.html", feature=feature, extra_info=extra_info)
 
 # Input form route: Display a form for farmers to enter their data

@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Ensure proper scaling on mobile devices -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ feature.name }}</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
@@ -23,7 +25,7 @@
       margin-top: 30px;
     }
     .highlighted {
-      color: #d9534f; /* Bootstrap's danger color, you can change it */
+      color: #d9534f;
       font-weight: bold;
     }
   </style>
@@ -32,7 +34,7 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="{{ url_for('home') }}">Farming App</a>
-    <div class="collapse navbar-collapse">
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <a href="{{ url_for('input_form') }}" class="btn btn-primary">Enter Farm Data</a>
@@ -54,83 +56,7 @@
           <hr>
           <div class="info-section">
             <h4>Static Information</h4>
-            <p>
-              <strong>Soil Types</strong><br>
-              Sandy: Recommended Crop: Carrot, due to good drainage and nutrient requirements.<br>
-              Loamy: Recommended Crop: Wheat, as loamy soil is ideal for balanced moisture.<br>
-              Clay: Recommended Crop: Rice, because clay holds water well for paddy fields.
-            </p>
-            <p>
-              <strong>Weather Conditions</strong><br>
-              Sunny: Recommended Crop: Corn, which thrives in full sun.<br>
-              Rainy: Recommended Crop: Rice, which benefits from abundant water.<br>
-              Humid: Recommended Crop: Soybean, suited for humid climates.
-            </p>
-            <p>
-              <strong>Monthly Suggestions</strong><br>
-              January: Plant winter-hardy crops like Kale or Cabbage.<br>
-              February: Begin early sowing of Spinach and other leafy greens.<br>
-              March: Start planting spring vegetables such as Lettuce.<br>
-              April: Ideal time for warm-season crops like Tomatoes and Peppers.<br>
-              May: Plant summer crops such as Corn or Beans.<br>
-              June: Ensure proper irrigation for high-demand crops like Cucumbers.<br>
-              July: Monitor for pests and rotate crops if needed.<br>
-              August: Prepare for harvest; consider quick-growing vegetables.<br>
-              September: Start planting fall crops like Broccoli and Cauliflower.<br>
-              October: Adjust for cooler temperatures; plant root vegetables.<br>
-              November: Sow cover crops to improve soil fertility during winter.<br>
-              December: Rest the soil and plan for the next season.
-            </p>
-            <h4>Crop Schedule</h4>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Temperature</th>
-                  <th>First Date</th>
-                  <th>Last Date</th>
-                  <th>Plants</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in extra_info.crop_schedule %}
-                <tr>
-                  <td>{{ row["Temperature"] }}</td>
-                  <td>{{ row["First Date"] }}</td>
-                  <td>{{ row["Last Date"] }}</td>
-                  <td>{{ row["Plants"] }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-            <h4>Nutrient Recommendations</h4>
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Crop</th>
-                  <th>N Low</th>
-                  <th>N High</th>
-                  <th>P Low</th>
-                  <th>P High</th>
-                  <th>K Low</th>
-                  <th>K High</th>
-                  <th>Other Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for rec in extra_info.nutrient_recommendations %}
-                <tr>
-                  <td>{{ rec["Crop"] }}</td>
-                  <td>{{ rec["N Low"] }}</td>
-                  <td>{{ rec["N High"] }}</td>
-                  <td>{{ rec["P Low"] }}</td>
-                  <td>{{ rec["P High"] }}</td>
-                  <td>{{ rec["K Low"] }}</td>
-                  <td>{{ rec["K High"] }}</td>
-                  <td>{{ rec["Other"] }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+            <!-- (Static content for Basic Crop Recommendation would go here) -->
           </div>
           {% if extra_info.finalSuggestions %}
             <hr>
@@ -220,18 +146,40 @@
               }
             });
           </script>
+        
+        {% elif feature.name == "Government Aid & Subsidy Info" %}
+          <hr>
+          <div class="info-section">
+            {{ extra_info.gov_info | safe }}
+          </div>
+        
+        {% elif feature.name == "Soil Health Monitoring" %}
+          <hr>
+          <div class="info-section">
+            <h4 class="highlighted">Soil Health Recommendations</h4>
+            {% if extra_info.recommendations %}
+              <ul class="list-group">
+                {% for rec in extra_info.recommendations %}
+                  <li class="list-group-item">{{ rec | safe }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p>No soil data available. Please submit your farm data.</p>
+            {% endif %}
+          </div>
+        
         {% endif %}
-
+        
         <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>
       </div>
     </div>
   </div>
-
+  
   <!-- Footer -->
   <div class="footer">
     <p>&copy; 2025 Farming App. All Rights Reserved.</p>
   </div>
-
+  
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
