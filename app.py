@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 app = Flask(__name__)
-# Set your secret key (ideally via environment variable)
+# Set your secret key (ideally via an environment variable)
 app.secret_key = os.environ.get('SECRET_KEY', 'a_default_secret_key')
 
 # Configure SQLite database
@@ -170,7 +170,7 @@ def feature_details(name):
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.suggestions:
             extra_info["finalSuggestions"] = latest_data.suggestions.split(",")
-    
+
     elif feature['name'] == "Real-Time Weather API Integration":
         city = request.args.get("city")
         if not city:
@@ -190,7 +190,7 @@ def feature_details(name):
             }
         else:
             extra_info = {"error": "Could not retrieve weather data"}
-    
+
     elif feature['name'] == "Supply & Demand Analysis":
         extra_info = {
             "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -224,12 +224,12 @@ def feature_details(name):
         extra_info = {
             "gov_info": """
                 <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
-                <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness, supporting rural development, and helping farmers modernize their operations. Through the Pennsylvania Department of Agriculture’s Agricultural Business Development Center, farmers can access:</p>
+                <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness, supporting rural development, and modernizing farming operations. Through the PA Department of Agriculture’s Agricultural Business Development Center, farmers can access:</p>
                 <ul>
-                    <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans to help with equipment upgrades, production expansion, and risk mitigation.</li>
+                    <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans to support equipment upgrades, production expansion, and risk mitigation.</li>
                     <li><strong>Grant Programs & Financial Assistance:</strong> Competitive grants for business planning, infrastructure improvements, and adopting sustainable practices.</li>
-                    <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management, marketing, and best agricultural practices to maximize productivity and profitability.</li>
-                    <li><strong>Disaster Assistance:</strong> Targeted programs for emergency support during severe weather or natural disasters.</li>
+                    <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management, marketing, and best practices to boost productivity and profitability.</li>
+                    <li><strong>Disaster Assistance:</strong> Emergency support programs for severe weather or natural disasters.</li>
                 </ul>
                 <p>Additional resources:</p>
                 <ul>
@@ -249,57 +249,91 @@ def feature_details(name):
 
             if latest_data.soil_ph < optimal_ph_range[0]:
                 recommendations.append(
-                    "Soil pH is low (acidic). Consider applying lime to raise the pH. For more details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
+                    "Soil pH is low (acidic). Consider applying lime to raise the pH. For details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
                 )
             elif latest_data.soil_ph > optimal_ph_range[1]:
                 recommendations.append(
-                    "Soil pH is high (alkaline). Consider adding elemental sulfur or organic matter to lower the pH. Consult your local cooperative extension for recommendations."
+                    "Soil pH is high (alkaline). Consider adding elemental sulfur or organic matter to lower the pH. Consult your local extension."
                 )
             else:
                 recommendations.append("Soil pH is within the optimal range.")
 
             if latest_data.soil_moisture < optimal_moisture:
                 recommendations.append(
-                    "Soil moisture is low. Increase irrigation, incorporate organic mulches, or use cover crops to help retain moisture. See the <a href='https://www.fsa.usda.gov/' target='_blank'>USDA Soil Conservation</a> resources."
+                    "Soil moisture is low. Increase irrigation, add organic mulches, or use cover crops to retain moisture. See USDA Soil Conservation resources."
                 )
             elif latest_data.soil_moisture > optimal_moisture:
                 recommendations.append(
-                    "Soil moisture is high. Consider improved drainage solutions such as raised beds or drainage tiles to prevent waterlogging."
+                    "Soil moisture is high. Consider improved drainage, such as raised beds or drainage tiles."
                 )
             else:
                 recommendations.append("Soil moisture is optimal.")
 
             recommendations.append(
-                "Regularly add compost or manure to improve soil structure and nutrient availability. The <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> offers great insights on organic matter management."
+                "Regularly add compost or manure to improve soil structure and nutrient availability. Refer to the <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> for tips."
             )
             recommendations.append(
-                "Consider planting cover crops and using crop rotation strategies to enhance soil fertility and reduce erosion. Check out the <a href='https://www.sare.org/' target='_blank'>SARE</a> website for detailed guidelines."
+                "Plant cover crops and use crop rotation strategies to enhance soil fertility and reduce erosion. Check out <a href='https://www.sare.org/' target='_blank'>SARE</a> for guidelines."
             )
         else:
             recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
         extra_info = {"recommendations": recommendations}
+    
     elif feature['name'] == "Market Price Alerts":
-    # Simulate a static dataset for market prices (replace with your actual dataset if available)
+        # Updated mock market prices for all crops
         market_prices = {
-        "Corn": 3.25,
-        "Wheat": 5.10,
-        "Soybean": 9.50,
-        "Rice": 0.90
+            "Peas": 2.50,
+            "Fava Beans": 2.80,
+            "Onions": 1.20,
+            "Leeks": 1.50,
+            "Garlic": 4.00,
+            "Greens (Collards, Kale, Mustard, Turnip, Etc.)": 1.10,
+            "Turnips": 0.90,
+            "White Potatoes": 0.75,
+            "Cabbage": 1.00,
+            "Lettuce": 1.20,
+            "Radishes": 1.10,
+            "Beets": 1.50,
+            "Carrots": 1.30,
+            "Shallots": 3.00,
+            "Spinach": 1.40,
+            "Bok Choy": 1.60,
+            "Parsley": 2.00,
+            "Swiss Chard": 1.50,
+            "Celery": 1.30,
+            "Watermelons": 0.50,
+            "Winter Squash": 0.80,
+            "Melons": 0.70,
+            "Summer Squash": 0.60,
+            "Cucumbers": 0.90,
+            "Pumpkins": 0.80,
+            "Sweet Potato": 1.00,
+            "Okra": 2.50,
+            "Chinese Cabbage": 1.10,
+            "Sweet Corn": 3.25,
+            "Peanuts": 2.20,
+            "Lima Beans": 2.80,
+            "Beans (Bush, Pole, Shell, Dried)": 2.50,
+            "Black-Eyed Peas": 2.30,
+            "Eggplant": 1.50,
+            "Peppers": 2.00,
+            "Tomato": 1.80,
+            "Basil": 3.00,
+            "Gandules (Pigeon Peas)": 2.50,
+            "Collards (Cabbage Family)": 1.20
         }
         extra_info = {"market_prices": market_prices}
-    
-        # Personalized suggestions based on the farmer's crop history
+        # Personalized suggestions based on crop history
         personalized_suggestions = []
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.crop_history:
-        # Assume crop_history is stored as a comma-separated string
             crops = [crop.strip() for crop in latest_data.crop_history.split(",")]
             for crop in crops:
                 if crop in market_prices:
                     price = market_prices[crop]
-                    # Customize thresholds per crop (these are arbitrary for demonstration)
-                    if crop == "Corn" and price > 3.0:
-                     personalized_suggestions.append(f"{crop}: Current price ${price} is above average; consider selling soon!")
+                    # Example thresholds (arbitrary for demonstration)
+                    if crop == "Sweet Corn" and price > 3.0:
+                        personalized_suggestions.append(f"{crop}: Current price ${price} is above average; consider selling soon!")
                     elif crop == "Wheat" and price > 4.5:
                         personalized_suggestions.append(f"{crop}: Current price ${price} is attractive; consider selling.")
                     elif crop == "Soybean" and price > 8.0:
@@ -309,7 +343,7 @@ def feature_details(name):
                     else:
                         personalized_suggestions.append(f"{crop}: Current price ${price} is moderate; keep monitoring.")
         extra_info["personalized_suggestions"] = personalized_suggestions
-    
+
     return render_template("feature.html", feature=feature, extra_info=extra_info)
 
 @app.route("/input", methods=["GET"])
