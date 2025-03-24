@@ -226,7 +226,10 @@ def feature_details(name):
 # Input form route: Display a form for farmers to enter their data
 @app.route("/input", methods=["GET"])
 def input_form():
-    return render_template("input_form.html")
+    # Retrieve the latest farm data for the current user (if any)
+    data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+    return render_template("input_form.html", data=data)
+
 
 # Process form submission: Save data, compute crop suggestions, and store personalized suggestions in session and database
 @app.route("/submit", methods=["POST"])

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Ensure proper scaling on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Farm Data Input</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -12,90 +13,89 @@
     <form action="{{ url_for('submit') }}" method="post">
       <div class="form-group">
         <label for="wantedSow">When do you want to plant your crops? (e.g., April, May)</label>
-        <input type="text" class="form-control" id="wantedSow" name="wantedSow" required>
+        <input type="text" class="form-control" id="wantedSow" name="wantedSow" value="{{ data.wantedSow if data and data.wantedSow else 'April, May' }}" required>
       </div>
       <div class="form-group">
         <label for="wantedHarvest">When do you want to harvest your crops? (e.g., June, July)</label>
-        <input type="text" class="form-control" id="wantedHarvest" name="wantedHarvest" required>
+        <input type="text" class="form-control" id="wantedHarvest" name="wantedHarvest" value="{{ data.wantedHarvest if data and data.wantedHarvest else 'June, July' }}" required>
       </div>
       <div class="form-group">
         <label for="location">Where is your farm located?</label>
-        <input type="text" class="form-control" id="location" name="location" value="Chester Springs" required>
+        <input type="text" class="form-control" id="location" name="location" value="{{ data.city if data and data.city else 'Chester Springs' }}" required>
       </div>
       <div class="form-group">
         <label for="soilPh">What is the pH of your soil?</label>
-        <input type="number" step="0.1" class="form-control" id="soilPh" name="soilPh" required>
+        <input type="number" step="0.1" class="form-control" id="soilPh" name="soilPh" value="{{ data.soil_ph if data and data.soil_ph else '6.5' }}" required>
       </div>
       <div class="form-group">
         <label for="weather">What is the current temperature (°C)?</label>
-        <input type="number" step="0.1" class="form-control" id="weather" name="weather" required>
+        <input type="number" step="0.1" class="form-control" id="weather" name="weather" value="{{ data.temperature if data and data.temperature else '20' }}" required>
       </div>
       <div class="form-group">
         <label for="previousPlants">What plants have you planted in the last year? (comma separated)</label>
-        <input type="text" class="form-control" id="previousPlants" name="previousPlants" required>
+        <input type="text" class="form-control" id="previousPlants" name="previousPlants" value="{{ data.crop_history if data and data.crop_history else '' }}" required>
       </div>
       <div class="form-group">
         <label for="soilNit">What is the Nitrogen level of your soil (kg/ha)?</label>
-        <input type="number" class="form-control" id="soilNit" name="soilNit" required>
+        <input type="number" class="form-control" id="soilNit" name="soilNit" value="{{ data.soilNit if data and data.soilNit else '' }}" required>
       </div>
       <div class="form-group">
         <label for="soilPho">What is the Phosphorus level of your soil (kg/ha)?</label>
-        <input type="number" class="form-control" id="soilPho" name="soilPho" required>
+        <input type="number" class="form-control" id="soilPho" name="soilPho" value="{{ data.soilPho if data and data.soilPho else '' }}" required>
       </div>
       <div class="form-group">
         <label for="soilPot">What is the Potassium level of your soil (kg/ha)?</label>
-        <input type="number" class="form-control" id="soilPot" name="soilPot" required>
+        <input type="number" class="form-control" id="soilPot" name="soilPot" value="{{ data.soilPot if data and data.soilPot else '' }}" required>
       </div>
       <div class="form-group">
         <label for="waterLevel">What is the water level of your soil (mm)?</label>
-        <input type="number" class="form-control" id="waterLevel" name="waterLevel" required>
+        <input type="number" class="form-control" id="waterLevel" name="waterLevel" value="{{ data.waterLevel if data and data.waterLevel else '' }}" required>
       </div>
       <div class="form-group">
         <label for="rainfall">Do you get rainfall? (Yes/No)</label>
-        <input type="text" class="form-control" id="rainfall" name="rainfall" required>
+        <input type="text" class="form-control" id="rainfall" name="rainfall" value="{{ data.rainfallStr if data and data.rainfallStr else '' }}" required>
       </div>
       <div class="form-group">
         <label for="irrigated">Do you have irrigation? (Yes/No)</label>
-        <input type="text" class="form-control" id="irrigated" name="irrigated" required>
+        <input type="text" class="form-control" id="irrigated" name="irrigated" value="{{ data.irrigated if data and data.irrigated else '' }}" required>
       </div>
       <div class="form-group">
         <label for="groundwater">Do you have groundwater? (Yes/No)</label>
-        <input type="text" class="form-control" id="groundwater" name="groundwater" required>
+        <input type="text" class="form-control" id="groundwater" name="groundwater" value="{{ data.groundwater if data and data.groundwater else '' }}" required>
       </div>
       <div class="form-group">
         <label for="surfacewater">Do you have surface water? (Yes/No)</label>
-        <input type="text" class="form-control" id="surfacewater" name="surfacewater" required>
+        <input type="text" class="form-control" id="surfacewater" name="surfacewater" value="{{ data.surfacewater if data and data.surfacewater else '' }}" required>
       </div>
-      <!-- Optional fields for database storage -->
       <div class="form-group">
         <label for="soil_moisture">Soil Moisture (%)</label>
-        <input type="number" step="0.1" class="form-control" id="soil_moisture" name="soil_moisture">
+        <input type="number" step="0.1" class="form-control" id="soil_moisture" name="soil_moisture" value="{{ data.soil_moisture if data and data.soil_moisture else '' }}">
       </div>
       <div class="form-group">
         <label for="rainfallAmount">Rainfall Amount (mm)</label>
-        <input type="number" step="0.1" class="form-control" id="rainfallAmount" name="rainfallAmount">
+        <input type="number" step="0.1" class="form-control" id="rainfallAmount" name="rainfallAmount" value="{{ data.rainfall if data and data.rainfall else '' }}">
       </div>
       <div class="form-group">
         <label for="soil_type">Soil Type</label>
         <select class="form-control" id="soil_type" name="soil_type">
-          <option value="Sandy">Sandy</option>
-          <option value="Loamy" selected>Loamy</option>
-          <option value="Clay">Clay</option>
+          <option value="Sandy" {% if data and data.soil_type == 'Sandy' %}selected{% endif %}>Sandy</option>
+          <option value="Loamy" {% if not data or data.soil_type == 'Loamy' %}selected{% endif %}>Loamy</option>
+          <option value="Clay" {% if data and data.soil_type == 'Clay' %}selected{% endif %}>Clay</option>
         </select>
       </div>
       <div class="form-group">
         <label for="crop_history">Crop History</label>
-        <textarea class="form-control" id="crop_history" name="crop_history" rows="3"></textarea>
+        <textarea class="form-control" id="crop_history" name="crop_history" rows="3">{{ data.crop_history if data and data.crop_history else '' }}</textarea>
       </div>
       <div class="form-group">
         <label for="fertilizer_usage">Fertilizer Usage</label>
-        <textarea class="form-control" id="fertilizer_usage" name="fertilizer_usage" rows="2"></textarea>
+        <textarea class="form-control" id="fertilizer_usage" name="fertilizer_usage" rows="2">{{ data.fertilizer_usage if data and data.fertilizer_usage else '' }}</textarea>
       </div>
       <div class="form-group">
         <label for="pest_issues">Pest/Disease Issues</label>
-        <textarea class="form-control" id="pest_issues" name="pest_issues" rows="2"></textarea>
+        <textarea class="form-control" id="pest_issues" name="pest_issues" rows="2">{{ data.pest_issues if data and data.pest_issues else '' }}</textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Submit Data</button>
+      <button type="submit" class="btn btn-primary btn-block">Submit Data</button>
     </form>
   </div>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

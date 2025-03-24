@@ -39,28 +39,28 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <!-- For mobile devices, use a full-width button -->
+          <!-- For mobile, full width button -->
           <a href="{{ url_for('input_form') }}" class="btn btn-lg btn-primary btn-block d-lg-none">Enter Farm Data</a>
-          <!-- For larger screens, use an inline button -->
+          <!-- For larger screens, inline button -->
           <a href="{{ url_for('input_form') }}" class="btn btn-lg btn-primary d-none d-lg-inline">Enter Farm Data</a>
         </li>
       </ul>
     </div>
   </nav>
 
-  <!-- Personalized Experience Section -->
+  <!-- Marketing Message Section -->
   <div class="container my-4">
     <div class="card mb-4 shadow">
-      <div class="card-header bg-success text-white">
-        <h3 class="mb-0">{{ personalized_info.greeting }}</h3>
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Welcome to the Future of Farming!</h3>
       </div>
       <div class="card-body">
-        <p>Your farm conditions:</p>
-        <ul>
-          <li>Soil: {{ personalized_info.soil }} (pH: {{ personalized_info.soil_ph }})</li>
-          <li>Temperature: {{ personalized_info.temperature }} °C</li>
-          <li>Rainfall: {{ personalized_info.rainfall }} mm</li>
-        </ul>
+        <p class="lead">
+          Discover how our innovative Farming App harnesses the power of AI and real‑time data to offer personalized crop recommendations, weather insights, and sustainable practices – all tailored to maximize your farm's productivity and profitability.
+        </p>
+        <p>
+          Whether you're a seasoned farmer or just starting out, our intuitive platform helps you make smarter decisions with data‑driven insights and expert guidance.
+        </p>
       </div>
     </div>
   </div>
