@@ -167,7 +167,6 @@ def feature_details(name):
 
     if feature['name'] == "Basic Crop Recommendation":
         extra_info = basic_crop_recommendation_info.copy()
-        # Retrieve personalized suggestions for this user from the latest FarmData entry
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.suggestions:
             extra_info["finalSuggestions"] = latest_data.suggestions.split(",")
@@ -222,7 +221,6 @@ def feature_details(name):
         extra_info = {"prefill": prefill, "prediction": prediction}
     
     elif feature['name'] == "Government Aid & Subsidy Info":
-        # New branch: Provide detailed info and useful links for PA
         extra_info = {
             "gov_info": """
                 <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
@@ -241,65 +239,53 @@ def feature_details(name):
                 </ul>
             """
         }
- 
+    
     elif feature['name'] == "Soil Health Monitoring":
-    # Retrieve the latest farm data for this user (if available)
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         recommendations = []
-    # Example thresholds (adjust as needed)
-    if latest_data:
-        optimal_ph_range = (6.0, 7.0)
-        optimal_moisture = 30  # percentage
+        if latest_data:
+            optimal_ph_range = (6.0, 7.0)
+            optimal_moisture = 30  # percentage
 
-        # Soil pH recommendations
-        if latest_data.soil_ph < optimal_ph_range[0]:
+            if latest_data.soil_ph < optimal_ph_range[0]:
+                recommendations.append(
+                    "Soil pH is low (acidic). Consider applying lime to raise the pH. For more details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
+                )
+            elif latest_data.soil_ph > optimal_ph_range[1]:
+                recommendations.append(
+                    "Soil pH is high (alkaline). Consider adding elemental sulfur or organic matter to lower the pH. Consult your local cooperative extension for recommendations."
+                )
+            else:
+                recommendations.append("Soil pH is within the optimal range.")
+
+            if latest_data.soil_moisture < optimal_moisture:
+                recommendations.append(
+                    "Soil moisture is low. Increase irrigation, incorporate organic mulches, or use cover crops to help retain moisture. See the <a href='https://www.fsa.usda.gov/' target='_blank'>USDA Soil Conservation</a> resources."
+                )
+            elif latest_data.soil_moisture > optimal_moisture:
+                recommendations.append(
+                    "Soil moisture is high. Consider improved drainage solutions such as raised beds or drainage tiles to prevent waterlogging."
+                )
+            else:
+                recommendations.append("Soil moisture is optimal.")
+
             recommendations.append(
-                "Soil pH is low (acidic). Consider applying lime to raise the pH. For more details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
+                "Regularly add compost or manure to improve soil structure and nutrient availability. The <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> offers great insights on organic matter management."
             )
-        elif latest_data.soil_ph > optimal_ph_range[1]:
             recommendations.append(
-                "Soil pH is high (alkaline). Consider adding elemental sulfur or organic matter to lower the pH. Consult your local cooperative extension for recommendations."
+                "Consider planting cover crops and using crop rotation strategies to enhance soil fertility and reduce erosion. Check out the <a href='https://www.sare.org/' target='_blank'>SARE</a> website for detailed guidelines."
             )
         else:
-            recommendations.append("Soil pH is within the optimal range.")
-
-        # Soil moisture recommendations
-        if latest_data.soil_moisture < optimal_moisture:
-            recommendations.append(
-                "Soil moisture is low. Increase irrigation, incorporate organic mulches, or use cover crops to help retain moisture. See the <a href='https://www.fsa.usda.gov/' target='_blank'>USDA Soil Conservation</a> resources."
-            )
-        elif latest_data.soil_moisture > optimal_moisture:
-            recommendations.append(
-                "Soil moisture is high. Consider improved drainage solutions such as raised beds or drainage tiles to prevent waterlogging."
-            )
-        else:
-            recommendations.append("Soil moisture is optimal.")
-
-        # Additional organic matter & nutrient recommendations
-        recommendations.append(
-            "Regularly add compost or manure to improve soil structure and nutrient availability. The <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> offers great insights on organic matter management."
-        )
-        recommendations.append(
-            "Consider planting cover crops and using crop rotation strategies to enhance soil fertility and reduce erosion. Check out the <a href='https://www.sare.org/' target='_blank'>SARE</a> website for detailed guidelines."
-        )
-    else:
-        recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
+            recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
+        extra_info = {"recommendations": recommendations}
     
-    extra_info = {"recommendations": recommendations}
-    
-        
-        
     return render_template("feature.html", feature=feature, extra_info=extra_info)
 
-# Input form route: Display a form for farmers to enter their data
 @app.route("/input", methods=["GET"])
 def input_form():
-    # Retrieve the latest farm data for the current user (if any)
     data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
     return render_template("input_form.html", data=data)
 
-
-# Process form submission: Save data, compute crop suggestions, and store personalized suggestions in session and database
 @app.route("/submit", methods=["POST"])
 def submit():
     user_id = session.get('user_id')
@@ -309,7 +295,7 @@ def submit():
         soil_ph=float(request.form.get("soil_ph") or 0),
         soil_moisture=float(request.form.get("soil_moisture") or 0),
         temperature=float(request.form.get("temperature") or 0),
-        rainfall=float(request.form.get("rainfallAmount") or 0),  # Numeric rainfall value
+        rainfall=float(request.form.get("rainfallAmount") or 0),
         crop_history=request.form.get("crop_history"),
         fertilizer_usage=request.form.get("fertilizer_usage"),
         pest_issues=request.form.get("pest_issues"),
@@ -325,9 +311,8 @@ def submit():
     nutrientsToCrops = pd.read_excel('data/nutrientsToCrops.xlsx', engine='openpyxl')
     cropRotationCycle = pd.read_excel('data/cropRotationCycle.xlsx', engine='openpyxl')
     
-    # Retrieve additional form inputs
-    wantedSow = request.form.get("wantedSow")             # e.g., "April, May"
-    wantedHarvest = request.form.get("wantedHarvest")       # e.g., "June, July"
+    wantedSow = request.form.get("wantedSow")
+    wantedHarvest = request.form.get("wantedHarvest")
     soilPh = float(request.form.get("soilPh"))
     weather_input = float(request.form.get("weather"))
     previousPlantsInput = request.form.get("previousPlants")
@@ -346,7 +331,6 @@ def submit():
     groundwater = True if groundwater_input.lower() == "yes" else False
     surfacewater = True if surfacewater_input.lower() == "yes" else False
 
-    # Initialize plantPoints dictionary with crop names and initial points 0
     plantPoints = {
         "Peas": 0, "Fava Beans": 0, "Onions": 0, "Leeks": 0, "Garlic": 0,
         "Greens (Collards, Kale, Mustard)": 0, "Turnips": 0, "White Potatoes": 0,
@@ -359,13 +343,11 @@ def submit():
         "Eggplant": 0, "Peppers": 0, "Tomato": 0, "Basil": 0, "Gandules (Pigeon Peas)": 0
     }
 
-    # pH Recommendations from Excel
     phCrops = phToCrops[(phToCrops["Low pH Acceptable"] <= soilPh) & (phToCrops["High pH Acceptable"] >= soilPh)]
     for crop in phCrops['Crop'].tolist():
         if crop in plantPoints:
             plantPoints[crop] += 8
 
-    # Nutrient Recommendations from Excel
     nitCrops = nutrientsToCrops[(nutrientsToCrops["Nitrogen (N) Low"] <= soilNit) & (nutrientsToCrops["Nitrogen (N) High"] >= soilNit)]
     phoCrops = nutrientsToCrops[(nutrientsToCrops["Phosphorus (P) Low"] <= soilPho) & (nutrientsToCrops["Phosphorus (P) High"] >= soilPho)]
     potCrops = nutrientsToCrops[(nutrientsToCrops["Potassium (K) Low"] <= soilPot) & (nutrientsToCrops["Potassium (K) High"] >= soilPot)]
@@ -379,13 +361,11 @@ def submit():
         if crop in plantPoints:
             plantPoints[crop] += 9
 
-    # Water Requirements from Excel
     waterAmountCrops = waterToCrops[(waterToCrops["Min Water (mm)"] <= waterLevel) & (waterToCrops["Max Water (mm)"] >= waterLevel)]
     for crop in waterAmountCrops['Crop'].tolist():
         if crop in plantPoints:
             plantPoints[crop] += 10
 
-    # Water Type Recommendations (based on boolean fields)
     rainTypeCrops = pd.concat([
         waterToCrops[waterToCrops["Rainfall"] == True] if rainfall_bool else pd.DataFrame(),
         waterToCrops[waterToCrops["Irrigated"] == True] if irrigated else pd.DataFrame(),
@@ -397,7 +377,6 @@ def submit():
         if crop in plantPoints:
             plantPoints[crop] += 7
 
-    # Time to Sow and Harvest Recommendations from Excel
     listOfSow = wantedSow.split(", ")
     sowTimeCrops = pd.DataFrame()
     for sow in listOfSow:
@@ -418,7 +397,6 @@ def submit():
         if crop in plantPoints:
             plantPoints[crop] += 7
 
-    # Crop Rotation Recommendations based on previous plants from Excel
     cropRotationCycleCropsTemp = []
     for plant in previousPlants:
         df_temp = cropRotationCycle[cropRotationCycle["Crops to Plant"].str.contains(plant, case=False)]
@@ -437,22 +415,14 @@ def submit():
                 if crop in plantPoints:
                     plantPoints[crop] += 10
 
-    # Final Crop Suggestions: sort and pick the top 7 crops
     sortedCrops = sorted(plantPoints.items(), key=lambda item: item[1], reverse=True)
     finalSuggestions = [crop for crop, pts in sortedCrops][:7]
     print("Final Crop Suggestions:", finalSuggestions)
-
-    # Save final suggestions to the database and commit
     data.suggestions = ",".join(finalSuggestions)
     db.session.commit()
-
-    # Save personalized suggestions in the session for this user
     session["personalized_suggestions"] = finalSuggestions
-
-    # Redirect to the Basic Crop Recommendation feature page
     return redirect(url_for('feature_details', name="Basic Crop Recommendation"))
 
-# Route to display stored submission data (optional)
 @app.route("/submission/<int:data_id>")
 def submission(data_id):
     data = FarmData.query.get_or_404(data_id)
