@@ -28,6 +28,13 @@
       color: #d9534f;
       font-weight: bold;
     }
+    .resource-links a {
+      color: #337ab7;
+      text-decoration: none;
+    }
+    .resource-links a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body class="bg-light">
@@ -42,7 +49,7 @@
       </ul>
     </div>
   </nav>
-
+  
   <!-- Feature Details Section -->
   <div class="container feature-detail">
     <div class="card mb-4">
@@ -55,8 +62,116 @@
         {% if feature.name == "Basic Crop Recommendation" %}
           <hr>
           <div class="info-section">
-            <h4>Static Information</h4>
-            <!-- (Static content for Basic Crop Recommendation would go here) -->
+            <h4>Crop Recommendation</h4>
+            <h5>Soil Types</h5>
+            <ul>
+              <li><strong>Sandy:</strong> Recommended Crop: Carrot, due to good drainage and nutrient requirements.</li>
+              <li><strong>Loamy:</strong> Recommended Crop: Wheat, as loamy soil is ideal for balanced moisture.</li>
+              <li><strong>Clay:</strong> Recommended Crop: Rice, because clay holds water well for paddy fields.</li>
+            </ul>
+            
+            <h5>Weather Conditions</h5>
+            <ul>
+              <li><strong>Sunny:</strong> Recommended Crop: Corn, which thrives in full sun.</li>
+              <li><strong>Rainy:</strong> Recommended Crop: Rice, which benefits from abundant water.</li>
+              <li><strong>Humid:</strong> Recommended Crop: Soybean, suited for humid climates.</li>
+            </ul>
+            
+            <h5>Monthly Suggestions</h5>
+            <ul>
+              <li><strong>January:</strong> Plant winter-hardy crops like Kale or Cabbage.</li>
+              <li><strong>February:</strong> Begin early sowing of Spinach and other leafy greens.</li>
+              <li><strong>March:</strong> Start planting spring vegetables such as Lettuce.</li>
+              <li><strong>April:</strong> Ideal time for warm-season crops like Tomatoes and Peppers.</li>
+              <li><strong>May:</strong> Plant summer crops such as Corn or Beans.</li>
+              <li><strong>June:</strong> Ensure proper irrigation for high-demand crops like Cucumbers.</li>
+              <li><strong>July:</strong> Monitor for pests and rotate crops if needed.</li>
+              <li><strong>August:</strong> Prepare for harvest; consider quick-growing vegetables.</li>
+              <li><strong>September:</strong> Start planting fall crops like Broccoli and Cauliflower.</li>
+              <li><strong>October:</strong> Adjust for cooler temperatures; plant root vegetables.</li>
+              <li><strong>November:</strong> Sow cover crops to improve soil fertility during winter.</li>
+              <li><strong>December:</strong> Rest the soil and plan for the next season.</li>
+            </ul>
+            
+            <h5>Crop Schedule</h5>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Temperature</th>
+                  <th>First Date</th>
+                  <th>Last Date</th>
+                  <th>Plants</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Cool</td>
+                  <td>Mid March</td>
+                  <td>Mid April</td>
+                  <td>Peas, Fava Beans, Onions, Leeks, Garlic, Greens, Turnips, White Potatoes, Cabbage</td>
+                </tr>
+                <tr>
+                  <td>Cool</td>
+                  <td>Late March</td>
+                  <td>Mid May</td>
+                  <td>Lettuce*, Radishes*, Beets*, Carrots*</td>
+                </tr>
+                <tr>
+                  <td>Cool</td>
+                  <td>Late March</td>
+                  <td>Late April</td>
+                  <td>Shallots, Spinach*, Bok Choy, Parsley; Cabbage Family, Leeks, Onions</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <h5>Nutrient Recommendations</h5>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>N Low</th>
+                  <th>N High</th>
+                  <th>P Low</th>
+                  <th>P High</th>
+                  <th>K Low</th>
+                  <th>K High</th>
+                  <th>Other Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Peas</td>
+                  <td>30</td>
+                  <td>50</td>
+                  <td>20</td>
+                  <td>40</td>
+                  <td>40</td>
+                  <td>60</td>
+                  <td>Prefers slightly acidic to neutral soil (pH 6.0-7.0)</td>
+                </tr>
+                <tr>
+                  <td>Fava Beans</td>
+                  <td>30</td>
+                  <td>50</td>
+                  <td>20</td>
+                  <td>40</td>
+                  <td>40</td>
+                  <td>60</td>
+                  <td>Well-drained soil, neutral to slightly alkaline pH</td>
+                </tr>
+              </tbody>
+            </table>
+            
+            <h5>Useful Resources</h5>
+            <div class="resource-links">
+              <ul>
+                <li><a href="https://www.fsa.usda.gov/" target="_blank">USDA Farm Service Agency</a></li>
+                <li><a href="https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/" target="_blank">NRCS Soil Health Guidelines</a></li>
+                <li><a href="https://extension.psu.edu/soil-management" target="_blank">Pennsylvania State University – Soil Management</a></li>
+                <li><a href="https://www.sare.org/" target="_blank">SARE (Sustainable Agriculture Research and Education)</a></li>
+              </ul>
+            </div>
           </div>
           {% if extra_info.finalSuggestions %}
             <hr>
