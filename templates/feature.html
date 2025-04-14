@@ -64,7 +64,6 @@
           <div class="info-section">
             <h4>Crop Recommendation</h4>
             {% if extra_info.finalSuggestions %}
-              <hr>
               <h4><span class="highlighted">Your Personalized Crop Suggestions:</span></h4>
               <ul class="list-group">
                 {% for crop in extra_info.finalSuggestions %}
@@ -75,52 +74,28 @@
               <p class="text-muted">No personalized suggestions available. Please submit your farm data.</p>
             {% endif %}
           </div>
-        
-        {% elif feature.name == "Fertilizer & Water Usage Recommendations" %}
+          
+        {% elif feature.name == "Government Aid & Subsidy Info" %}
           <hr>
           <div class="info-section">
-            <h4 class="highlighted">Fertilizer & Irrigation Advice</h4>
+            {{ extra_info.gov_info | safe }}
+          </div>
+          
+        {% elif feature.name == "Soil Health Monitoring" %}
+          <hr>
+          <div class="info-section">
+            <h4 class="highlighted">Soil Health Recommendations</h4>
             {% if extra_info.recommendations %}
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Crop</th>
-                    <th>Ideal NPK Ratio</th>
-                    <th>Irrigation Method</th>
-                    <th>Tips</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for rec in extra_info.recommendations %}
-                  <tr>
-                    <td>{{ rec.crop }}</td>
-                    <td>{{ rec.NPK }}</td>
-                    <td>{{ rec.irrigation }}</td>
-                    <td>{{ rec.tips }}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+              <ul class="list-group">
+                {% for rec in extra_info.recommendations %}
+                  <li class="list-group-item">{{ rec | safe }}</li>
+                {% endfor %}
+              </ul>
             {% else %}
-              <p class="text-muted">No crop suggestions available. Please enter your farm data.</p>
+              <p>No soil data available. Please submit your farm data.</p>
             {% endif %}
           </div>
-        
-        {% elif feature.name == "Harvest Time Optimization" %}
-          <hr>
-          <div class="info-section">
-            <h4>Harvest Time Optimization</h4>
-            {% if extra_info.harvest_recommendation %}
-              <p><strong>Recommendation:</strong> {{ extra_info.harvest_recommendation }}</p>
-              <p><strong>City:</strong> {{ extra_info.city }}</p>
-              <p><strong>Temperature:</strong> {{ extra_info.temperature }} °F</p>
-              <p><strong>Weather:</strong> {{ extra_info.weather_description }}</p>
-              <p><strong>Recommended Crops for Harvest:</strong> {{ extra_info.recommended_crops | join(', ') }}</p>
-            {% else %}
-              <p class="text-muted">No harvest optimization data available.</p>
-            {% endif %}
-          </div>
-        
+          
         {% elif feature.name == "Market Price Alerts (Static Data)" %}
           <hr>
           <div class="info-section">
@@ -135,10 +110,10 @@
               <tbody>
                 {% if extra_info.get("market_prices") %}
                   {% for crop, price in extra_info.market_prices.items() %}
-                  <tr>
-                    <td>{{ crop }}</td>
-                    <td>{{ price }}</td>
-                  </tr>
+                    <tr>
+                      <td>{{ crop }}</td>
+                      <td>{{ price }}</td>
+                    </tr>
                   {% endfor %}
                 {% else %}
                   <tr><td colspan="2">No market price data available.</td></tr>
@@ -156,7 +131,18 @@
               <p class="text-muted">No personalized suggestions available. Please update your crop history.</p>
             {% endif %}
           </div>
-        
+          
+        {% elif feature.name == "Crop Rotation Planning" %}
+          <hr>
+          <div class="info-section">
+            <h4 class="highlighted">Crop Rotation Planning</h4>
+            {% if extra_info.rotation_schedule %}
+              <p>{{ extra_info.rotation_schedule | safe }}</p>
+            {% else %}
+              <p>No crop history available. Please submit your farm data for personalized crop rotation recommendations.</p>
+            {% endif %}
+          </div>
+          
         {% elif feature.name == "Real-Time Weather API Integration" %}
           <hr>
           {% if extra_info.error %}
@@ -170,7 +156,52 @@
               <li class="list-group-item"><strong>Wind Speed:</strong> {{ extra_info.wind_speed }} m/s</li>
             </ul>
           {% endif %}
-        
+          
+        {% elif feature.name == "Fertilizer & Water Usage Recommendations" %}
+          <hr>
+          <div class="info-section">
+            <h4 class="highlighted">Fertilizer & Irrigation Advice</h4>
+            {% if extra_info.recommendations %}
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Crop</th>
+                    <th>Ideal NPK Ratio</th>
+                    <th>Irrigation Method</th>
+                    <th>Tips</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for rec in extra_info.recommendations %}
+                    <tr>
+                      <td>{{ rec.crop }}</td>
+                      <td>{{ rec.NPK }}</td>
+                      <td>{{ rec.irrigation }}</td>
+                      <td>{{ rec.tips }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <p class="text-muted">No fertilizer recommendations available. Please submit your farm data.</p>
+            {% endif %}
+          </div>
+          
+        {% elif feature.name == "Harvest Time Optimization" %}
+          <hr>
+          <div class="info-section">
+            <h4>Harvest Time Optimization</h4>
+            {% if extra_info.harvest_recommendation %}
+              <p><strong>Recommendation:</strong> {{ extra_info.harvest_recommendation }}</p>
+              <p><strong>City:</strong> {{ extra_info.city }}</p>
+              <p><strong>Temperature:</strong> {{ extra_info.temperature }} °F</p>
+              <p><strong>Weather:</strong> {{ extra_info.weather_description }}</p>
+              <p><strong>Recommended Crops for Harvest:</strong> {{ extra_info.recommended_crops | join(', ') }}</p>
+            {% else %}
+              <p class="text-muted">No harvest optimization data available.</p>
+            {% endif %}
+          </div>
+          
         {% elif feature.name == "AI-Based Yield Prediction" %}
           <hr>
           <h4>Yield Prediction</h4>
@@ -192,38 +223,6 @@
           {% if extra_info.prediction %}
             <div class="alert alert-info mt-4">{{ extra_info.prediction }}</div>
           {% endif %}
-        
-        {% elif feature.name == "Government Aid & Subsidy Info" %}
-          <hr>
-          <div class="info-section">
-            {{ extra_info.gov_info | safe }}
-          </div>
-        
-        {% elif feature.name == "Soil Health Monitoring" %}
-          <hr>
-          <div class="info-section">
-            <h4 class="highlighted">Soil Health Recommendations</h4>
-            {% if extra_info.recommendations %}
-              <ul class="list-group">
-                {% for rec in extra_info.recommendations %}
-                  <li class="list-group-item">{{ rec | safe }}</li>
-                {% endfor %}
-              </ul>
-            {% else %}
-              <p>No soil data available. Please submit your farm data.</p>
-            {% endif %}
-          </div>
-        
-        {% elif feature.name == "Crop Rotation Planning" %}
-          <hr>
-          <div class="info-section">
-            <h4 class="highlighted">Crop Rotation Planning</h4>
-            {% if extra_info.rotation_schedule %}
-              <p>{{ extra_info.rotation_schedule | safe }}</p>
-            {% else %}
-              <p>No crop history available. Please submit your farm data for personalized crop rotation recommendations.</p>
-            {% endif %}
-          </div>
         {% endif %}
         
         <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back to Home</a>

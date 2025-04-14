@@ -23,7 +23,7 @@ class FarmData(db.Model):
     soil_type = db.Column(db.String(50))
     soil_ph = db.Column(db.Float)
     soil_moisture = db.Column(db.Float)
-    temperature = db.Column(db.Float)  # Now stores Fahrenheit
+    temperature = db.Column(db.Float)  # Stored in Fahrenheit
     rainfall = db.Column(db.Float)
     crop_history = db.Column(db.Text)
     fertilizer_usage = db.Column(db.Text)
@@ -60,8 +60,7 @@ def personalize_subsidy_info(data):
         messages.append("Pest issues reported—explore pest control subsidies and training in your area.")
     if data.rainfall is None or data.rainfall == 0:
         messages.append("If your farm is mainly rain-fed, consider drought assistance programs.")
-    bullet_list = "<ul>" + "".join(f"<li>{msg}</li>" for msg in messages) + "</ul>"
-    return bullet_list
+    return "<ul>" + "".join(f"<li>{msg}</li>" for msg in messages) + "</ul>"
 
 # --------------------------
 # Static Extra Info and Data
@@ -135,6 +134,13 @@ basic_crop_recommendation_info = {
     ]
 }
 
+# Define a default dictionary for fertilizer & water usage recommendations
+fertilizer_water_data = {
+    "Peas": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Water regularly during flowering."},
+    "Fava Beans": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist but not waterlogged."},
+    # Add additional crop data here as needed...
+}
+
 # Default market prices for "Market Price Alerts (Static Data)"
 default_market_prices = {
     "Peas": 2.50,
@@ -178,24 +184,48 @@ default_market_prices = {
     "Collards (Cabbage Family)": 1.20
 }
 
+# Features that remain after removing unwanted capabilities
 features = [
-    {"name": "Basic Crop Recommendation", "description": "Suggests the best crop based on soil type, weather, and month.", "benefit": "Helps farmers choose the right crop for higher yield & profit.", "image": "basic_crop.png"},
-    {"name": "Government Aid & Subsidy Info", "description": "Provides a list of available farming subsidies based on region.", "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.", "image": "gov_aid.png"},
-    {"name": "Soil Health Monitoring", "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.", "benefit": "Prevents soil degradation and boosts long-term productivity.", "image": "soil_health.png"},
-    {"name": "Market Price Alerts (Static Data)", "description": "Displays current crop prices from a stored dataset.", "benefit": "Helps farmers decide when to sell crops for maximum profit.", "image": "market_price_static.png"},
-    {"name": "Crop Rotation Planning", "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.", "benefit": "Prevents soil depletion and increases productivity.", "image": "crop_rotation.png"},
-    {"name": "Real-Time Weather API Integration", "description": "Fetch live weather data from OpenWeatherMap API.", "benefit": "Provides accurate climate data for better crop selection.", "image": "weather_api.png"},
-    {"name": "Rainfall & Temperature Prediction", "description": "Uses historical weather trends to estimate future rainfall & temperature.", "benefit": "Farmers can plan irrigation & planting effectively.", "image": "rainfall_temperature.png"},
-    {"name": "Fertilizer & Water Usage Recommendations", "description": "Suggests the best fertilizer & irrigation methods for each crop.", "benefit": "Saves money & resources while ensuring healthy crops.", "image": "fertilizer_water.png"},
-    {"name": "Pest & Disease Alerts (Based on Season & Location)", "description": "Notifies farmers of pest infestations & diseases in their region.", "benefit": "Reduces crop loss by taking preventive measures in advance.", "image": "pest_disease.png"},
-    {"name": "Supply & Demand Analysis", "description": "Shows which crops are in high demand in different regions.", "benefit": "Prevents overproduction of low-demand crops & reduces waste.", "image": "supply_demand.png"},
-    {"name": "Market Price Alerts (Real-Time API Integration)", "description": "Uses APIs like USDA to fetch live crop prices from markets.", "benefit": "Farmers can sell crops at the best price.", "image": "market_price_api.png"},
-    {"name": "Harvest Time Optimization", "description": "Recommends best harvesting time based on weather & market trends.", "benefit": "Maximizes profit & crop quality.", "image": "harvest_optimization.png"},
-    {"name": "Drought & Flood Warnings", "description": "Alerts farmers about climate risks like droughts or floods.", "benefit": "Allows early prevention & crop protection strategies.", "image": "drought_flood.png"},
-    {"name": "Cooperative Farming Suggestions", "description": "Suggests nearby farmers growing similar crops for bulk selling.", "benefit": "Helps farmers negotiate better prices & reduce costs.", "image": "cooperative_farming.png"},
-    {"name": "AI-Based Yield Prediction", "description": "Uses machine learning to predict crop yield based on weather, soil, and planting time.", "benefit": "Helps farmers make data-driven decisions to improve productivity.", "image": "ai_yield.png"},
-    {"name": "Automated Crop Insurance Recommendations", "description": "Suggests insurance plans based on crop & risk factors.", "benefit": "Protects farmers from financial loss due to bad weather.", "image": "crop_insurance.png"},
-    {"name": "Integration with IoT Sensors", "description": "Connects to soil moisture & temperature sensors for real-time data collection.", "benefit": "Helps in precision farming, reducing water & fertilizer wastage.", "image": "iot_sensors.png"}
+    {"name": "Basic Crop Recommendation", 
+     "description": "Suggests the best crop based on soil type, weather, and month.",
+     "benefit": "Helps farmers choose the right crop for higher yield & profit.", 
+     "image": "basic_crop.png"},
+    {"name": "Government Aid & Subsidy Info", 
+     "description": "Provides a list of available farming subsidies based on region.",
+     "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.", 
+     "image": "gov_aid.png"},
+    {"name": "Soil Health Monitoring", 
+     "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.",
+     "benefit": "Prevents soil degradation and boosts long-term productivity.", 
+     "image": "soil_health.png"},
+    {"name": "Market Price Alerts (Static Data)", 
+     "description": "Displays current crop prices from a stored dataset.",
+     "benefit": "Helps farmers decide when to sell crops for maximum profit.", 
+     "image": "market_price_static.png"},
+    {"name": "Crop Rotation Planning", 
+     "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.",
+     "benefit": "Prevents soil depletion and increases productivity.", 
+     "image": "crop_rotation.png"},
+    {"name": "Real-Time Weather API Integration", 
+     "description": "Fetch live weather data from OpenWeatherMap API.",
+     "benefit": "Provides accurate climate data for better crop selection.", 
+     "image": "weather_api.png"},
+    {"name": "Fertilizer & Water Usage Recommendations", 
+     "description": "Suggests the best fertilizer & irrigation methods for each crop.",
+     "benefit": "Saves money & resources while ensuring healthy crops.", 
+     "image": "fertilizer_water.png"},
+    {"name": "Harvest Time Optimization", 
+     "description": "Recommends best harvesting time based on weather & market trends.",
+     "benefit": "Maximizes profit & crop quality.", 
+     "image": "harvest_optimization.png"},
+    {"name": "Supply & Demand Analysis", 
+     "description": "Shows which crops are in high demand in different regions.",
+     "benefit": "Prevents overproduction of low-demand crops & reduces waste.", 
+     "image": "supply_demand.png"},
+    {"name": "AI-Based Yield Prediction", 
+     "description": "Uses machine learning to predict crop yield based on weather, soil, and planting time.",
+     "benefit": "Helps farmers make data-driven decisions to improve productivity.", 
+     "image": "ai_yield.png"}
 ]
 
 # --------------------------
@@ -209,7 +239,7 @@ def home():
             "greeting": f"Hello farmer from {latest_data.city}!",
             "soil": latest_data.soil_type,
             "soil_ph": latest_data.soil_ph,
-            "temperature": latest_data.temperature,  # Fahrenheit
+            "temperature": latest_data.temperature,
             "rainfall": latest_data.rainfall,
             "suggestions": latest_data.suggestions.split(",") if latest_data.suggestions else []
         }
@@ -218,7 +248,7 @@ def home():
             "greeting": "Hello Farmer!",
             "soil": "Loamy",
             "soil_ph": 6.5,
-            "temperature": 68,  # Default 68°F (~20°C)
+            "temperature": 68,
             "rainfall": 100,
             "suggestions": []
         }
@@ -230,19 +260,94 @@ def feature_details(name):
     if not feature:
         return "Feature not found", 404
 
-    extra_info = None
+    extra_info = {}
 
     if feature['name'] == "Basic Crop Recommendation":
         extra_info = basic_crop_recommendation_info.copy()
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.suggestions:
             extra_info["finalSuggestions"] = latest_data.suggestions.split(",")
+    elif feature['name'] == "Government Aid & Subsidy Info":
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        static_info = """
+            <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
+            <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness,
+            supporting rural development, and modernizing farming operations. Through the PA Department of Agriculture’s
+            Agricultural Business Development Center, farmers can access:</p>
+            <ul>
+                <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans for equipment upgrades and expansion.</li>
+                <li><strong>Grant Programs & Financial Assistance:</strong> Competitive grants for business planning and infrastructure improvements.</li>
+                <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management and best practices.</li>
+                <li><strong>Disaster Assistance:</strong> Emergency support for severe weather or natural disasters.</li>
+            </ul>
+            <p>Additional resources:</p>
+            <ul>
+                <li><a href="https://www.pa.gov/agencies/pda/business-and-industry/agricultural-business-development-center/financial-assistance.html" target="_blank">PA Agricultural Business Development Center</a></li>
+                <li><a href="https://www.fsa.usda.gov/" target="_blank">USDA Farm Service Agency</a></li>
+                <li><a href="https://www.agriculture.pa.gov/" target="_blank">Pennsylvania Department of Agriculture</a></li>
+            </ul>
+        """
+        if latest_data:
+            personalized_messages = personalize_subsidy_info(latest_data)
+            gov_info = static_info + "<hr><h5>Personalized Recommendations:</h5>" + personalized_messages
+        else:
+            gov_info = static_info
+        extra_info = {"gov_info": gov_info}
+    elif feature['name'] == "Soil Health Monitoring":
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        recommendations = []
+        if latest_data:
+            optimal_ph_range = (6.0, 7.0)
+            optimal_moisture = 30
+            if latest_data.soil_ph < optimal_ph_range[0]:
+                recommendations.append("Soil pH is low (acidic). Consider applying lime. See <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>.")
+            elif latest_data.soil_ph > optimal_ph_range[1]:
+                recommendations.append("Soil pH is high (alkaline). Add elemental sulfur or organic matter. Consult your local extension.")
+            else:
+                recommendations.append("Soil pH is within the optimal range.")
+            if latest_data.soil_moisture < optimal_moisture:
+                recommendations.append("Soil moisture is low. Increase irrigation or use cover crops.")
+            elif latest_data.soil_moisture > optimal_moisture:
+                recommendations.append("Soil moisture is high. Consider improved drainage options.")
+            else:
+                recommendations.append("Soil moisture is optimal.")
+            recommendations.append("Regularly add compost to improve soil structure. See <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a>.")
+            recommendations.append("Use crop rotation to enhance soil fertility. Check out <a href='https://www.sare.org/' target='_blank'>SARE</a>.")
+        else:
+            recommendations.append("No soil data available. Please submit your farm data.")
+        extra_info = {"recommendations": recommendations}
+    elif feature['name'] == "Market Price Alerts (Static Data)":
+        extra_info = {"market_prices": default_market_prices}
+        personalized_suggestions = []
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        if latest_data and latest_data.crop_history:
+            crops = [crop.strip().lower() for crop in latest_data.crop_history.split(",")]
+            market_prices_lower = {key.lower(): value for key, value in default_market_prices.items()}
+            for crop in crops:
+                if crop in market_prices_lower:
+                    price = market_prices_lower[crop]
+                    suggestion = f"{crop.title()}: Current price ${price} per unit; keep monitoring."
+                    personalized_suggestions.append(suggestion)
+        extra_info["personalized_suggestions"] = personalized_suggestions
+    elif feature['name'] == "Crop Rotation Planning":
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        if latest_data and latest_data.crop_history:
+            rotation_schedule = (
+                "Based on your crop history, we recommend planting <strong>Legumes (Nitrogen Fixers)</strong> next. "
+                "Additionally, consider intercropping complementary crops to enhance pest control and nutrient utilization. "
+                "Adjust your crop schedules based on local weather data and soil test results for optimal performance. "
+                "For more detailed guidance, refer to <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/national/' target='_blank'>USDA NRCS</a> "
+                "or <a href='https://www.sare.org/' target='_blank'>SARE</a>."
+            )
+        else:
+            rotation_schedule = "No crop history available. Please submit your farm data for personalized crop rotation recommendations."
+        extra_info = {"rotation_schedule": rotation_schedule}
     elif feature['name'] == "Real-Time Weather API Integration":
         city = request.args.get("city")
         if not city:
             latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
             city = latest_data.city if (latest_data and latest_data.city) else "Chester Springs"
-        api_key = "41634f4abed439fd5c63967222a91b8b"  # Replace with your actual API key
+        api_key = "41634f4abed439fd5c63967222a91b8b"  # Replace with your API key
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=imperial"
         response = requests.get(weather_url)
         if response.status_code == 200:
@@ -270,7 +375,7 @@ def feature_details(name):
         if latest_data and latest_data.suggestions:
             suggested_crops = [crop.strip() for crop in latest_data.suggestions.split(",")]
             city = latest_data.city if latest_data.city else "Chester Springs"
-            api_key = "41634f4abed439fd5c63967222a91b8b"  # Replace with your actual API key
+            api_key = "41634f4abed439fd5c63967222a91b8b"  # Replace with your API key
             weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=imperial"
             response = requests.get(weather_url)
             if response.status_code == 200:
@@ -368,83 +473,8 @@ def feature_details(name):
                 pred_value = random.uniform(50, 150)  # Simulated yield prediction
                 prediction = f"Predicted crop yield: {pred_value:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
-    elif feature['name'] == "Government Aid & Subsidy Info":
-        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
-        static_info = """
-            <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
-            <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness,
-            supporting rural development, and modernizing farming operations. Through the PA Department of Agriculture’s
-            Agricultural Business Development Center, farmers can access:</p>
-            <ul>
-                <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans to support equipment upgrades, production expansion, and risk mitigation.</li>
-                <li><strong>Grant Programs & Financial Assistance:</strong> Competitive grants for business planning, infrastructure improvements, and adopting sustainable practices.</li>
-                <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management, marketing, and best practices to boost productivity and profitability.</li>
-                <li><strong>Disaster Assistance:</strong> Emergency support programs for severe weather or natural disasters.</li>
-            </ul>
-            <p>Additional resources:</p>
-            <ul>
-                <li><a href="https://www.pa.gov/agencies/pda/business-and-industry/agricultural-business-development-center/financial-assistance.html" target="_blank">PA Agricultural Business Development Center - Financial Assistance</a></li>
-                <li><a href="https://www.fsa.usda.gov/" target="_blank">USDA Farm Service Agency</a></li>
-                <li><a href="https://www.agriculture.pa.gov/" target="_blank">Pennsylvania Department of Agriculture</a></li>
-            </ul>
-        """
-        if latest_data:
-            personalized_messages = personalize_subsidy_info(latest_data)
-            gov_info = static_info + "<hr><h5>Personalized Recommendations:</h5>" + personalized_messages
-        else:
-            gov_info = static_info
-        extra_info = {"gov_info": gov_info}
-    elif feature['name'] == "Soil Health Monitoring":
-        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
-        recommendations = []
-        if latest_data:
-            optimal_ph_range = (6.0, 7.0)
-            optimal_moisture = 30  # percentage
-            if latest_data.soil_ph < optimal_ph_range[0]:
-                recommendations.append(
-                    "Soil pH is low (acidic). Consider applying lime to raise the pH. For details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
-                )
-            elif latest_data.soil_ph > optimal_ph_range[1]:
-                recommendations.append(
-                    "Soil pH is high (alkaline). Consider adding elemental sulfur or organic matter to lower the pH. Consult your local extension."
-                )
-            else:
-                recommendations.append("Soil pH is within the optimal range.")
-            if latest_data.soil_moisture < optimal_moisture:
-                recommendations.append(
-                    "Soil moisture is low. Increase irrigation, add organic mulches, or use cover crops to retain moisture. See USDA Soil Conservation resources."
-                )
-            elif latest_data.soil_moisture > optimal_moisture:
-                recommendations.append(
-                    "Soil moisture is high. Consider improved drainage, such as raised beds or drainage tiles."
-                )
-            else:
-                recommendations.append("Soil moisture is optimal.")
-            recommendations.append(
-                "Regularly add compost or manure to improve soil structure and nutrient availability. Refer to the <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> for tips."
-            )
-            recommendations.append(
-                "Plant cover crops and use crop rotation strategies to enhance soil fertility and reduce erosion. Check out <a href='https://www.sare.org/' target='_blank'>SARE</a> for guidelines."
-            )
-        else:
-            recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
-        extra_info = {"recommendations": recommendations}
-    # Enhanced Crop Rotation Planning with additional recommendations and reference links
-    elif feature['name'] == "Crop Rotation Planning":
-        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
-        if latest_data and latest_data.crop_history:
-            rotation_schedule = (
-                "Based on your crop history, we recommend planting <strong>Legumes (Nitrogen Fixers)</strong> next. "
-                "Additionally, consider intercropping complementary crops to enhance pest control and nutrient utilization. "
-                "Adjust your crop schedules based on local weather data and soil test results for optimal performance. "
-                "For more detailed guidance, refer to <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/national/' target='_blank'>USDA NRCS</a> "
-                "or <a href='https://www.sare.org/' target='_blank'>SARE</a>."
-            )
-        else:
-            rotation_schedule = "No crop history available. Please submit your farm data to receive personalized crop rotation recommendations."
-        extra_info = {"rotation_schedule": rotation_schedule}
 
-    # Patch: Ensure extra_info is a dictionary and that market_prices is defined if not provided
+    # Patch: Ensure extra_info is a dictionary and that market_prices is defined
     if extra_info is None:
         extra_info = {}
     if "market_prices" not in extra_info:
@@ -465,7 +495,7 @@ def submit():
         soil_type=request.form.get("soil_type"),
         soil_ph=float(request.form.get("soil_ph") or 0),
         soil_moisture=float(request.form.get("soil_moisture") or 0),
-        temperature=float(request.form.get("temperature") or 0),  # Now stored in Fahrenheit
+        temperature=float(request.form.get("temperature") or 0),
         rainfall=float(request.form.get("rainfallAmount") or 0),
         crop_history=request.form.get("crop_history"),
         fertilizer_usage=request.form.get("fertilizer_usage"),
@@ -475,7 +505,7 @@ def submit():
     db.session.add(data)
     db.session.commit()
 
-    # Read Excel files from the 'data' folder (ensure these files exist)
+    # Read Excel files from the 'data' folder
     timeToSowAndHarvest = pd.read_excel('data/timeToSowAndHarvest.xlsx', engine='openpyxl')
     waterToCrops = pd.read_excel('data/waterToCrops.xlsx', engine='openpyxl')
     phToCrops = pd.read_excel('data/phToCrops.xlsx', engine='openpyxl')
