@@ -15,25 +15,28 @@ app.secret_key = os.environ.get('SECRET_KEY', 'a_default_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///farmdata.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
+    
 # Model to store farmer data, including personalized suggestions
 class FarmData(db.Model):
+    __tablename__ = "farmdata"
+
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(36))
-    soil_type = db.Column(db.String(50))
-    soil_ph = db.Column(db.Float)
-    soil_moisture = db.Column(db.Float)
-    temperature = db.Column(db.Float)  # Stored in Fahrenheit
-    rainfall = db.Column(db.Float)
-    crop_history = db.Column(db.Text)
-    fertilizer_usage = db.Column(db.Text)
-    pest_issues = db.Column(db.Text)
-    city = db.Column(db.String(100))
-    suggestions = db.Column(db.Text)  # Comma-separated suggestions
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.String(36), nullable=False)
+    soil_type = db.Column(db.String(50), nullable=True)
+    soil_ph = db.Column(db.Float, nullable=True)
+    soil_moisture = db.Column(db.Float, nullable=True)
+    temperature = db.Column(db.Float, nullable=True)  # Stored in Fahrenheit
+    rainfall = db.Column(db.Float, nullable=True)
+    crop_history = db.Column(db.Text, nullable=True)
+    fertilizer_usage = db.Column(db.Text, nullable=True)
+    pest_issues = db.Column(db.Text, nullable=True)
+    city = db.Column(db.String(100), nullable=True)
+    suggestions = db.Column(db.Text, nullable=True)  # Comma-separated suggestions
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
-        return f'<FarmData {self.id} for user {self.user_id}>'
+        return f"<FarmData id={self.id} user_id={self.user_id}>"
+
 
 # Before each request, ensure tables exist and track user via session
 @app.before_request
@@ -483,7 +486,7 @@ def submit():
     data = FarmData(
         user_id=user_id,
         soil_type=request.form.get("soil_type"),
-        soil_ph=float(request.form.get("soil_ph") or 0),
+        soil_ph=float(request.form.get("soil_ph") or 6.5),
         soil_moisture=float(request.form.get("soil_moisture") or 0),
         temperature=float(request.form.get("temperature") or 0),
         rainfall=float(request.form.get("rainfallAmount") or 0),
@@ -504,7 +507,7 @@ def submit():
     
     wantedSow = request.form.get("wantedSow")
     wantedHarvest = request.form.get("wantedHarvest")
-    soilPh = float(request.form.get("soilPh"))
+    soilPh = float(request.form.get("soil_ph") or 6.5)
     weather_input = float(request.form.get("weather"))
     previousPlantsInput = request.form.get("previousPlants")
     previousPlants = previousPlantsInput.split(", ")
