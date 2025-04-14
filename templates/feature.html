@@ -133,15 +133,19 @@
                 </tr>
               </thead>
               <tbody>
-                {% for crop, price in extra_info.market_prices.items() %}
-                <tr>
-                  <td>{{ crop }}</td>
-                  <td>{{ price }}</td>
-                </tr>
-                {% endfor %}
+                {% if extra_info.get("market_prices") %}
+                  {% for crop, price in extra_info.market_prices.items() %}
+                  <tr>
+                    <td>{{ crop }}</td>
+                    <td>{{ price }}</td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr><td colspan="2">No market price data available.</td></tr>
+                {% endif %}
               </tbody>
             </table>
-            {% if extra_info.personalized_suggestions %}
+            {% if extra_info.get("personalized_suggestions") %}
               <h4 class="highlighted">Personalized Suggestions</h4>
               <ul class="list-group">
                 {% for suggestion in extra_info.personalized_suggestions %}
@@ -189,47 +193,6 @@
             <div class="alert alert-info mt-4">{{ extra_info.prediction }}</div>
           {% endif %}
         
-        {% elif feature.name == "Supply & Demand Analysis" %}
-          <hr>
-          <h4>Supply & Demand Analysis</h4>
-          <div id="chart-container">
-            <canvas id="supplyDemandChart"></canvas>
-          </div>
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          <script>
-            const ctxSupply = document.getElementById('supplyDemandChart').getContext('2d');
-            const supplyDemandChart = new Chart(ctxSupply, {
-              type: 'line',
-              data: {
-                labels: {{ extra_info.labels | safe }},
-                datasets: [
-                  {
-                    label: 'Supply',
-                    data: {{ extra_info.supply | safe }},
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    fill: false,
-                    tension: 0.1
-                  },
-                  {
-                    label: 'Demand',
-                    data: {{ extra_info.demand | safe }},
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    fill: false,
-                    tension: 0.1
-                  }
-                ]
-              },
-              options: {
-                responsive: true,
-                scales: {
-                  y: { beginAtZero: true }
-                }
-              }
-            });
-          </script>
-        
         {% elif feature.name == "Government Aid & Subsidy Info" %}
           <hr>
           <div class="info-section">
@@ -256,7 +219,7 @@
           <div class="info-section">
             <h4 class="highlighted">Crop Rotation Planning</h4>
             {% if extra_info.rotation_schedule %}
-              <p>{{ extra_info.rotation_schedule }}</p>
+              <p>{{ extra_info.rotation_schedule | safe }}</p>
             {% else %}
               <p>No crop history available. Please submit your farm data for personalized crop rotation recommendations.</p>
             {% endif %}
@@ -270,7 +233,7 @@
   
   <!-- Footer -->
   <div class="footer">
-    <p>&copy; 2025 Farming App. All Rights Reserved.</p>
+    <p>&copy; 2025 Farming App</p>
   </div>
   
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

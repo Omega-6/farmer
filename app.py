@@ -42,7 +42,30 @@ def before_request():
     if 'user_id' not in session:
         session['user_id'] = str(uuid.uuid4())
 
-# Static extra info for "Basic Crop Recommendation" (mock data)
+# --------------------------
+# Helper Function: Personalize Government Aid Info
+# --------------------------
+def personalize_subsidy_info(data):
+    messages = []
+    if data.city:
+        messages.append(f"Explore loan programs available in {data.city}.")
+    if data.soil_type:
+        messages.append(f"Your {data.soil_type} soil may qualify for cover crop grants to boost sustainability.")
+    if data.crop_history:
+        crop = data.crop_history.split(',')[0].strip()
+        messages.append(f"Since you grow {crop}, you might be eligible for specialty crop aid programs.")
+    if data.fertilizer_usage:
+        messages.append("Fertilizer usage noted—check out EQIP for funding to reduce runoff.")
+    if data.pest_issues:
+        messages.append("Pest issues reported—explore pest control subsidies and training in your area.")
+    if data.rainfall is None or data.rainfall == 0:
+        messages.append("If your farm is mainly rain-fed, consider drought assistance programs.")
+    bullet_list = "<ul>" + "".join(f"<li>{msg}</li>" for msg in messages) + "</ul>"
+    return bullet_list
+
+# --------------------------
+# Static Extra Info and Data
+# --------------------------
 basic_crop_recommendation_info = {
     "soil_types": {
         "Sandy": "Recommended Crop: Carrot, due to good drainage and nutrient requirements.",
@@ -112,50 +135,49 @@ basic_crop_recommendation_info = {
     ]
 }
 
-# Static dictionary for Fertilizer & Water Usage Recommendations
-fertilizer_water_data = {
-    "Peas": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Water regularly during flowering."},
-    "Fava Beans": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist but not waterlogged."},
-    "Onions": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Avoid overwatering to prevent bulb rot."},
-    "Leeks": {"NPK": "12-12-12", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Ensure consistent moisture for uniform growth."},
-    "Garlic": {"NPK": "15-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Provide well-draining soil and moderate irrigation."},
-    "Greens (Collards, Kale, Mustard, Turnip, Etc.)": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Ensure even watering to prevent bolting."},
-    "Turnips": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Keep soil evenly moist for best root development."},
-    "White Potatoes": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "High", "tips": "Irrigate deeply to encourage tuber formation."},
-    "Cabbage": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Keep soil consistently moist to prevent splitting."},
-    "Lettuce": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Frequent light watering to keep leaves tender."},
-    "Radishes": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Water consistently but avoid overwatering."},
-    "Beets": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Ensure even moisture for root swelling."},
-    "Carrots": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Water consistently for uniform root development."},
-    "Shallots": {"NPK": "12-12-12", "irrigation": "Drip", "water_needs": "Low", "tips": "Provide well-drained soil and moderate watering."},
-    "Spinach": {"NPK": "15-10-10", "irrigation": "Sprinkler", "water_needs": "High", "tips": "Needs consistent watering; avoid drought stress."},
-    "Bok Choy": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Maintain moisture levels for crisp leaves."},
-    "Parsley": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist and provide partial shade."},
-    "Swiss Chard": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Water evenly to prevent tip burn."},
-    "Celery": {"NPK": "12-12-12", "irrigation": "Drip", "water_needs": "High", "tips": "Celery needs lots of water to develop properly."},
-    "Watermelons": {"NPK": "8-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Irrigate deeply but infrequently once established."},
-    "Winter Squash": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Water deeply and regularly during fruiting."},
-    "Melons": {"NPK": "8-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Ensure deep watering to support large fruits."},
-    "Summer Squash": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Maintain consistent moisture for best yield."},
-    "Cucumbers": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Regular watering ensures crisp, healthy cucumbers."},
-    "Pumpkins": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "High", "tips": "Deep, infrequent watering helps form large pumpkins."},
-    "Sweet Potatoes": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Consistent moisture supports tuber development."},
-    "Okra": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Regular watering is key during the growing season."},
-    "Chinese Cabbage": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Keep soil moist to avoid bitterness."},
-    "Sweet Corn": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Deep watering helps prevent cracking."},
-    "Peanuts": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Ensure proper drainage to prevent waterlogging."},
-    "Lima Beans": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Maintain even moisture during flowering."},
-    "Beans (Bush, Pole, Shell, Dried)": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Avoid overwatering to prevent root rot."},
-    "Black-Eyed Peas": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Good drainage is key for healthy growth."},
-    "Eggplant": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Consistent moisture supports robust fruiting."},
-    "Peppers": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Avoid over-fertilizing to maintain flavor."},
-    "Tomato": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Deep watering helps prevent cracking."},
-    "Basil": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Regular watering and pruning keeps basil thriving."},
-    "Gandules (Pigeon Peas)": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Good drainage and moderate watering recommended."},
-    "Collards (Cabbage Family)": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Consistent moisture helps maintain leafy greens."}
+# Default market prices for "Market Price Alerts (Static Data)"
+default_market_prices = {
+    "Peas": 2.50,
+    "Fava Beans": 2.80,
+    "Onions": 1.20,
+    "Leeks": 1.50,
+    "Garlic": 4.00,
+    "Greens (Collards, Kale, Mustard, Turnip, Etc.)": 1.10,
+    "Turnips": 0.90,
+    "White Potatoes": 0.75,
+    "Cabbage": 1.00,
+    "Lettuce": 1.20,
+    "Radishes": 1.10,
+    "Beets": 1.50,
+    "Carrots": 1.30,
+    "Shallots": 3.00,
+    "Spinach": 1.40,
+    "Bok Choy": 1.60,
+    "Parsley": 2.00,
+    "Swiss Chard": 1.50,
+    "Celery": 1.30,
+    "Watermelons": 0.50,
+    "Winter Squash": 0.80,
+    "Melons": 0.70,
+    "Summer Squash": 0.60,
+    "Cucumbers": 0.90,
+    "Pumpkins": 0.80,
+    "Sweet Potato": 1.00,
+    "Okra": 2.50,
+    "Chinese Cabbage": 1.10,
+    "Sweet Corn": 3.25,
+    "Peanuts": 2.20,
+    "Lima Beans": 2.80,
+    "Beans (Bush, Pole, Shell, Dried)": 2.50,
+    "Black-Eyed Peas": 2.30,
+    "Eggplant": 1.50,
+    "Peppers": 2.00,
+    "Tomato": 1.80,
+    "Basil": 3.00,
+    "Gandules (Pigeon Peas)": 2.50,
+    "Collards (Cabbage Family)": 1.20
 }
 
-# Static list of features (for navigation and display)
 features = [
     {"name": "Basic Crop Recommendation", "description": "Suggests the best crop based on soil type, weather, and month.", "benefit": "Helps farmers choose the right crop for higher yield & profit.", "image": "basic_crop.png"},
     {"name": "Government Aid & Subsidy Info", "description": "Provides a list of available farming subsidies based on region.", "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.", "image": "gov_aid.png"},
@@ -176,7 +198,9 @@ features = [
     {"name": "Integration with IoT Sensors", "description": "Connects to soil moisture & temperature sensors for real-time data collection.", "benefit": "Helps in precision farming, reducing water & fertilizer wastage.", "image": "iot_sensors.png"}
 ]
 
-# Home route: Display features and personalized greeting based on latest farm data for the current session
+# --------------------------
+# Routes
+# --------------------------
 @app.route("/")
 def home():
     latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
@@ -185,7 +209,7 @@ def home():
             "greeting": f"Hello farmer from {latest_data.city}!",
             "soil": latest_data.soil_type,
             "soil_ph": latest_data.soil_ph,
-            "temperature": latest_data.temperature,  # Fahrenheit value
+            "temperature": latest_data.temperature,  # Fahrenheit
             "rainfall": latest_data.rainfall,
             "suggestions": latest_data.suggestions.split(",") if latest_data.suggestions else []
         }
@@ -200,7 +224,6 @@ def home():
         }
     return render_template("index.html", features=features, personalized_info=personalized_info)
 
-# Feature details route: Render specific feature page based on feature name
 @app.route("/feature/<name>", methods=["GET", "POST"])
 def feature_details(name):
     feature = next((f for f in features if f['name'] == name), None)
@@ -214,14 +237,12 @@ def feature_details(name):
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.suggestions:
             extra_info["finalSuggestions"] = latest_data.suggestions.split(",")
-    
     elif feature['name'] == "Real-Time Weather API Integration":
         city = request.args.get("city")
         if not city:
             latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
             city = latest_data.city if (latest_data and latest_data.city) else "Chester Springs"
         api_key = "41634f4abed439fd5c63967222a91b8b"  # Replace with your actual API key
-        # Use imperial units to get Fahrenheit
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=imperial"
         response = requests.get(weather_url)
         if response.status_code == 200:
@@ -229,13 +250,12 @@ def feature_details(name):
             extra_info = {
                 "city": city,
                 "description": data["weather"][0]["description"].capitalize(),
-                "temperature": data["main"]["temp"],  # Fahrenheit
+                "temperature": data["main"]["temp"],
                 "humidity": data["main"]["humidity"],
                 "wind_speed": data["wind"]["speed"]
             }
         else:
             extra_info = {"error": "Could not retrieve weather data"}
-    
     elif feature['name'] == "Fertilizer & Water Usage Recommendations":
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         suggestions = []
@@ -245,26 +265,21 @@ def feature_details(name):
                 if crop in fertilizer_water_data:
                     suggestions.append({ "crop": crop, **fertilizer_water_data[crop] })
         extra_info = {"recommendations": suggestions}
-    
     elif feature['name'] == "Harvest Time Optimization":
-        # Harvest Time Optimization using personalized crop suggestions from the database
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.suggestions:
-            # Get personalized crop suggestions from the database
             suggested_crops = [crop.strip() for crop in latest_data.suggestions.split(",")]
             city = latest_data.city if latest_data.city else "Chester Springs"
-            # Get current weather info in Fahrenheit from OpenWeatherMap API
             api_key = "41634f4abed439fd5c63967222a91b8b"  # Replace with your actual API key
             weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=imperial"
             response = requests.get(weather_url)
             if response.status_code == 200:
                 weather_data = response.json()
-                temperature = weather_data["main"]["temp"]  # Fahrenheit
+                temperature = weather_data["main"]["temp"]
                 weather_desc = weather_data["weather"][0]["description"].capitalize()
             else:
                 temperature = None
                 weather_desc = "Unavailable"
-            # Use a static dictionary of market prices for simulation (assumed in $ per unit)
             market_prices = {
                 "Peas": 2.50,
                 "Fava Beans": 2.80,
@@ -307,14 +322,11 @@ def feature_details(name):
                 "Collards (Cabbage Family)": 1.20
             }
             recommended_crops = []
-            # Debug: print suggested crops for harvest
-            print("Suggested crops from DB:", suggested_crops)
             if temperature is not None:
-                # Change threshold: Temperature > 68°F (~20°C) now, adjust as needed
                 for crop in suggested_crops:
                     if crop in market_prices:
                         price = market_prices[crop]
-                        if temperature > 1 and price > .5:
+                        if temperature > 68 and price > 0.5:
                             recommended_crops.append(crop)
             if recommended_crops:
                 recommendation = "Optimal harvest time for: " + ", ".join(recommended_crops)
@@ -329,14 +341,12 @@ def feature_details(name):
             }
         else:
             extra_info = {"harvest_recommendation": "No personalized crop suggestions available. Please submit your farm data."}
-    
     elif feature['name'] == "Supply & Demand Analysis":
         extra_info = {
             "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             "supply": [100, 120, 130, 110, 150, 140, 160, 170, 180, 150, 140, 130],
             "demand": [90, 110, 120, 100, 140, 130, 150, 160, 170, 140, 130, 120]
         }
-    
     elif feature['name'] == "AI-Based Yield Prediction":
         prediction = None
         prefill = {}
@@ -358,34 +368,38 @@ def feature_details(name):
                 pred_value = random.uniform(50, 150)  # Simulated yield prediction
                 prediction = f"Predicted crop yield: {pred_value:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
-    
     elif feature['name'] == "Government Aid & Subsidy Info":
-        extra_info = {
-            "gov_info": """
-                <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
-                <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness, supporting rural development, and modernizing farming operations. Through the PA Department of Agriculture’s Agricultural Business Development Center, farmers can access:</p>
-                <ul>
-                    <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans to support equipment upgrades, production expansion, and risk mitigation.</li>
-                    <li><strong>Grant Programs & Financial Assistance:</strong> Competitive grants for business planning, infrastructure improvements, and adopting sustainable practices.</li>
-                    <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management, marketing, and best practices to boost productivity and profitability.</li>
-                    <li><strong>Disaster Assistance:</strong> Emergency support programs for severe weather or natural disasters.</li>
-                </ul>
-                <p>Additional resources:</p>
-                <ul>
-                    <li><a href="https://www.pa.gov/agencies/pda/business-and-industry/agricultural-business-development-center/financial-assistance.html" target="_blank">PA Agricultural Business Development Center - Financial Assistance</a></li>
-                    <li><a href="https://www.fsa.usda.gov/" target="_blank">USDA Farm Service Agency</a></li>
-                    <li><a href="https://www.agriculture.pa.gov/" target="_blank">Pennsylvania Department of Agriculture</a></li>
-                </ul>
-            """
-        }
-    
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        static_info = """
+            <h4>Government Aid & Subsidy Info in Pennsylvania</h4>
+            <p>Pennsylvania offers a range of financial assistance programs aimed at strengthening agribusiness,
+            supporting rural development, and modernizing farming operations. Through the PA Department of Agriculture’s
+            Agricultural Business Development Center, farmers can access:</p>
+            <ul>
+                <li><strong>Direct Loan & Loan Guarantee Programs:</strong> Low‑interest loans to support equipment upgrades, production expansion, and risk mitigation.</li>
+                <li><strong>Grant Programs & Financial Assistance:</strong> Competitive grants for business planning, infrastructure improvements, and adopting sustainable practices.</li>
+                <li><strong>Technical Assistance & Training:</strong> Expert guidance on financial management, marketing, and best practices to boost productivity and profitability.</li>
+                <li><strong>Disaster Assistance:</strong> Emergency support programs for severe weather or natural disasters.</li>
+            </ul>
+            <p>Additional resources:</p>
+            <ul>
+                <li><a href="https://www.pa.gov/agencies/pda/business-and-industry/agricultural-business-development-center/financial-assistance.html" target="_blank">PA Agricultural Business Development Center - Financial Assistance</a></li>
+                <li><a href="https://www.fsa.usda.gov/" target="_blank">USDA Farm Service Agency</a></li>
+                <li><a href="https://www.agriculture.pa.gov/" target="_blank">Pennsylvania Department of Agriculture</a></li>
+            </ul>
+        """
+        if latest_data:
+            personalized_messages = personalize_subsidy_info(latest_data)
+            gov_info = static_info + "<hr><h5>Personalized Recommendations:</h5>" + personalized_messages
+        else:
+            gov_info = static_info
+        extra_info = {"gov_info": gov_info}
     elif feature['name'] == "Soil Health Monitoring":
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         recommendations = []
         if latest_data:
             optimal_ph_range = (6.0, 7.0)
             optimal_moisture = 30  # percentage
-
             if latest_data.soil_ph < optimal_ph_range[0]:
                 recommendations.append(
                     "Soil pH is low (acidic). Consider applying lime to raise the pH. For details, see the <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/soils/health/' target='_blank'>NRCS Soil Health Guidelines</a>."
@@ -396,7 +410,6 @@ def feature_details(name):
                 )
             else:
                 recommendations.append("Soil pH is within the optimal range.")
-
             if latest_data.soil_moisture < optimal_moisture:
                 recommendations.append(
                     "Soil moisture is low. Increase irrigation, add organic mulches, or use cover crops to retain moisture. See USDA Soil Conservation resources."
@@ -407,7 +420,6 @@ def feature_details(name):
                 )
             else:
                 recommendations.append("Soil moisture is optimal.")
-
             recommendations.append(
                 "Regularly add compost or manure to improve soil structure and nutrient availability. Refer to the <a href='https://soilhealth.acs.edu/' target='_blank'>Soil Health Academy</a> for tips."
             )
@@ -417,99 +429,27 @@ def feature_details(name):
         else:
             recommendations.append("No soil data available. Please submit your farm data for personalized recommendations.")
         extra_info = {"recommendations": recommendations}
-    
-    elif feature['name'] == "Market Price Alerts (Static Data)":
-        market_prices = {
-            "Peas": 2.50,
-            "Fava Beans": 2.80,
-            "Onions": 1.20,
-            "Leeks": 1.50,
-            "Garlic": 4.00,
-            "Greens (Collards, Kale, Mustard, Turnip, Etc.)": 1.10,
-            "Turnips": 0.90,
-            "White Potatoes": 0.75,
-            "Cabbage": 1.00,
-            "Lettuce": 1.20,
-            "Radishes": 1.10,
-            "Beets": 1.50,
-            "Carrots": 1.30,
-            "Shallots": 3.00,
-            "Spinach": 1.40,
-            "Bok Choy": 1.60,
-            "Parsley": 2.00,
-            "Swiss Chard": 1.50,
-            "Celery": 1.30,
-            "Watermelons": 0.50,
-            "Winter Squash": 0.80,
-            "Melons": 0.70,
-            "Summer Squash": 0.60,
-            "Cucumbers": 0.90,
-            "Pumpkins": 0.80,
-            "Sweet Potato": 1.00,
-            "Okra": 2.50,
-            "Chinese Cabbage": 1.10,
-            "Sweet Corn": 3.25,
-            "Peanuts": 2.20,
-            "Lima Beans": 2.80,
-            "Beans (Bush, Pole, Shell, Dried)": 2.50,
-            "Black-Eyed Peas": 2.30,
-            "Eggplant": 1.50,
-            "Peppers": 2.00,
-            "Tomato": 1.80,
-            "Basil": 3.00,
-            "Gandules (Pigeon Peas)": 2.50,
-            "Collards (Cabbage Family)": 1.20
-        }
-        extra_info = {"market_prices": market_prices}
-        personalized_suggestions = []
-        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
-        if latest_data and latest_data.crop_history:
-            crops = [crop.strip() for crop in latest_data.crop_history.split(",")]
-            for crop in crops:
-                if crop in market_prices:
-                    price = market_prices[crop]
-                    if crop == "Sweet Corn" and price > 3.0:
-                        personalized_suggestions.append(f"{crop}: Current price ${price} is above average; consider selling soon!")
-                    elif crop == "Wheat" and price > 4.5:
-                        personalized_suggestions.append(f"{crop}: Current price ${price} is attractive; consider selling.")
-                    elif crop == "Soybean" and price > 8.0:
-                        personalized_suggestions.append(f"{crop}: Current price ${price} is high; consider selling.")
-                    elif crop == "Rice" and price > 1.0:
-                        personalized_suggestions.append(f"{crop}: Current price ${price} is favorable; think about selling.")
-                    else:
-                        personalized_suggestions.append(f"{crop}: Current price ${price} is moderate; keep monitoring.")
-        extra_info["personalized_suggestions"] = personalized_suggestions
-    
+    # Enhanced Crop Rotation Planning with additional recommendations and reference links
     elif feature['name'] == "Crop Rotation Planning":
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest_data and latest_data.crop_history:
-            crops = [crop.strip() for crop in latest_data.crop_history.split(",")]
-            legumes = {"Peas", "Fava Beans", "Black-Eyed Peas", "Peanuts", "Lima Beans", "Beans (Bush, Pole, Shell, Dried)"}
-            heavy_feeders = {"Tomato", "Peppers", "Eggplant", "Sweet Corn", "Pumpkins", "Watermelons"}
-            light_feeders = {"Lettuce", "Radishes", "Carrots", "Onions", "Garlic"}
-            cover_crops = {"Cabbage", "Collards (Cabbage Family)", "Spinach", "Swiss Chard"}
-            recent_legumes = any(crop in legumes for crop in crops)
-            recent_heavy = any(crop in heavy_feeders for crop in crops)
-            recent_light = any(crop in light_feeders for crop in crops)
-            recent_cover = any(crop in cover_crops for crop in crops)
-            if not (recent_legumes or recent_heavy or recent_light or recent_cover):
-                rotation_schedule = "Default Rotation: Year 1 - Legumes; Year 2 - Heavy Feeders; Year 3 - Light Feeders; Year 4 - Cover Crops."
-            else:
-                if not recent_legumes:
-                    next_group = "Legumes (Nitrogen Fixers)"
-                elif not recent_heavy:
-                    next_group = "Heavy Feeders"
-                elif not recent_light:
-                    next_group = "Light Feeders"
-                elif not recent_cover:
-                    next_group = "Cover Crops"
-                else:
-                    next_group = "Alternate crops for balanced soil health"
-                rotation_schedule = f"Based on your crop history, we recommend planting {next_group} next."
+            rotation_schedule = (
+                "Based on your crop history, we recommend planting <strong>Legumes (Nitrogen Fixers)</strong> next. "
+                "Additionally, consider intercropping complementary crops to enhance pest control and nutrient utilization. "
+                "Adjust your crop schedules based on local weather data and soil test results for optimal performance. "
+                "For more detailed guidance, refer to <a href='https://www.nrcs.usda.gov/wps/portal/nrcs/main/national/' target='_blank'>USDA NRCS</a> "
+                "or <a href='https://www.sare.org/' target='_blank'>SARE</a>."
+            )
         else:
             rotation_schedule = "No crop history available. Please submit your farm data to receive personalized crop rotation recommendations."
         extra_info = {"rotation_schedule": rotation_schedule}
-    
+
+    # Patch: Ensure extra_info is a dictionary and that market_prices is defined if not provided
+    if extra_info is None:
+        extra_info = {}
+    if "market_prices" not in extra_info:
+        extra_info["market_prices"] = default_market_prices
+
     return render_template("feature.html", feature=feature, extra_info=extra_info)
 
 @app.route("/input", methods=["GET"])
