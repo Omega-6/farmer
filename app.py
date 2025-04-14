@@ -29,7 +29,7 @@ class FarmData(db.Model):
     fertilizer_usage = db.Column(db.Text)
     pest_issues = db.Column(db.Text)
     city = db.Column(db.String(100))
-    suggestions = db.Column(db.Text)  # Personalized crop suggestions (comma-separated)
+    suggestions = db.Column(db.Text)  # Comma-separated suggestions
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -43,7 +43,7 @@ def before_request():
         session['user_id'] = str(uuid.uuid4())
 
 # --------------------------
-# Helper Function: Personalize Government Aid Info
+# Helper: Personalize Government Aid Info
 # --------------------------
 def personalize_subsidy_info(data):
     messages = []
@@ -134,14 +134,14 @@ basic_crop_recommendation_info = {
     ]
 }
 
-# Define a default dictionary for fertilizer & water usage recommendations
+# Default dictionary for fertilizer & water usage recommendations
 fertilizer_water_data = {
     "Peas": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Water regularly during flowering."},
-    "Fava Beans": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist but not waterlogged."},
-    # Add additional crop data here as needed...
+    "Fava Beans": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist but not waterlogged."}
+    # Add additional crop data as needed...
 }
 
-# Default market prices for "Market Price Alerts (Static Data)"
+# Default market prices for Market Price Alerts (Static Data)
 default_market_prices = {
     "Peas": 2.50,
     "Fava Beans": 2.80,
@@ -184,47 +184,43 @@ default_market_prices = {
     "Collards (Cabbage Family)": 1.20
 }
 
-# Features that remain after removing unwanted capabilities
+# Define the list of features (Supply & Demand Analysis removed)
 features = [
     {"name": "Basic Crop Recommendation", 
      "description": "Suggests the best crop based on soil type, weather, and month.",
-     "benefit": "Helps farmers choose the right crop for higher yield & profit.", 
+     "benefit": "Helps farmers choose the right crop for higher yield & profit.",
      "image": "basic_crop.png"},
     {"name": "Government Aid & Subsidy Info", 
      "description": "Provides a list of available farming subsidies based on region.",
-     "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.", 
+     "benefit": "Helps farmers access financial support for seeds, fertilizers, or technology.",
      "image": "gov_aid.png"},
     {"name": "Soil Health Monitoring", 
      "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.",
-     "benefit": "Prevents soil degradation and boosts long-term productivity.", 
+     "benefit": "Prevents soil degradation and boosts long-term productivity.",
      "image": "soil_health.png"},
     {"name": "Market Price Alerts (Static Data)", 
      "description": "Displays current crop prices from a stored dataset.",
-     "benefit": "Helps farmers decide when to sell crops for maximum profit.", 
+     "benefit": "Helps farmers decide when to sell crops for maximum profit.",
      "image": "market_price_static.png"},
     {"name": "Crop Rotation Planning", 
      "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.",
-     "benefit": "Prevents soil depletion and increases productivity.", 
+     "benefit": "Prevents soil depletion and increases productivity.",
      "image": "crop_rotation.png"},
     {"name": "Real-Time Weather API Integration", 
      "description": "Fetch live weather data from OpenWeatherMap API.",
-     "benefit": "Provides accurate climate data for better crop selection.", 
+     "benefit": "Provides accurate climate data for better crop selection.",
      "image": "weather_api.png"},
     {"name": "Fertilizer & Water Usage Recommendations", 
      "description": "Suggests the best fertilizer & irrigation methods for each crop.",
-     "benefit": "Saves money & resources while ensuring healthy crops.", 
+     "benefit": "Saves money & resources while ensuring healthy crops.",
      "image": "fertilizer_water.png"},
     {"name": "Harvest Time Optimization", 
      "description": "Recommends best harvesting time based on weather & market trends.",
-     "benefit": "Maximizes profit & crop quality.", 
+     "benefit": "Maximizes profit & crop quality.",
      "image": "harvest_optimization.png"},
-    {"name": "Supply & Demand Analysis", 
-     "description": "Shows which crops are in high demand in different regions.",
-     "benefit": "Prevents overproduction of low-demand crops & reduces waste.", 
-     "image": "supply_demand.png"},
     {"name": "AI-Based Yield Prediction", 
      "description": "Uses machine learning to predict crop yield based on weather, soil, and planting time.",
-     "benefit": "Helps farmers make data-driven decisions to improve productivity.", 
+     "benefit": "Helps farmers make data-driven decisions to improve productivity.",
      "image": "ai_yield.png"}
 ]
 
@@ -446,12 +442,6 @@ def feature_details(name):
             }
         else:
             extra_info = {"harvest_recommendation": "No personalized crop suggestions available. Please submit your farm data."}
-    elif feature['name'] == "Supply & Demand Analysis":
-        extra_info = {
-            "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-            "supply": [100, 120, 130, 110, 150, 140, 160, 170, 180, 150, 140, 130],
-            "demand": [90, 110, 120, 100, 140, 130, 150, 160, 170, 140, 130, 120]
-        }
     elif feature['name'] == "AI-Based Yield Prediction":
         prediction = None
         prefill = {}
@@ -470,11 +460,11 @@ def feature_details(name):
             except (ValueError, TypeError):
                 prediction = "Invalid input. Please enter numeric values."
             else:
-                pred_value = random.uniform(50, 150)  # Simulated yield prediction
+                pred_value = random.uniform(50, 150)
                 prediction = f"Predicted crop yield: {pred_value:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
 
-    # Patch: Ensure extra_info is a dictionary and that market_prices is defined
+    # Patch: Ensure extra_info is a dictionary and ensure market_prices is defined
     if extra_info is None:
         extra_info = {}
     if "market_prices" not in extra_info:
@@ -505,7 +495,7 @@ def submit():
     db.session.add(data)
     db.session.commit()
 
-    # Read Excel files from the 'data' folder
+    # Read Excel files (ensure these files exist in the 'data' folder)
     timeToSowAndHarvest = pd.read_excel('data/timeToSowAndHarvest.xlsx', engine='openpyxl')
     waterToCrops = pd.read_excel('data/waterToCrops.xlsx', engine='openpyxl')
     phToCrops = pd.read_excel('data/phToCrops.xlsx', engine='openpyxl')
