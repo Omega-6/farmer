@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Ensure proper scaling on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to the Future of Farming!</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -31,19 +30,19 @@
 </head>
 <body>
   <!-- Main Header Section -->
- <!-- Main Header Section -->
-<div class="jumbotron text-center py-5">
-  <div class="card-header bg-light text-dark p-4">
-    <h1 class="mb-4">Welcome to the Future of Farming!</h1>
-    <h2 class="mb-4">Farming Assistant</h2>
-    <p class="mb-4">
-      Meet the Farming Assistant—where AI and real-time data team up to serve you personalized crop recommendations, live weather updates, and smart sustainable tips to boost your farm's output. Whether you're a seasoned pro or just starting out, our platform helps you make savvy, data-driven decisions.
-    </p>
-    <a href="{{ url_for('input_form') }}" class="btn btn-primary cta-btn">Get Your Personalized Farming Assistant – Please Enter Farm Data</a>
+  <div class="jumbotron text-center py-5">
+    <div class="card-header bg-light text-dark p-4">
+      <h1 class="mb-4">Welcome to the Future of Farming!</h1>
+      <h2 class="mb-4">Farming Assistant</h2>
+      <p class="mb-4">
+        Meet the Farming Assistant—where AI and real-time data team up to serve you personalized crop recommendations, live weather updates, and smart sustainable tips to boost your farm's output. Whether you're a seasoned pro or just starting out, our platform helps you make savvy, data-driven decisions.
+      </p>
+      <a href="{{ url_for('input_form') }}" class="btn btn-primary cta-btn">
+        Get Your Personalized Farming Assistant – Please Enter Farm Data
+      </a>
+    </div>
   </div>
-</div>
 
-  
   <!-- Features Section -->
   <div class="container my-4">
     <h1 class="text-center mb-4">Our Powerful Features</h1>
@@ -63,7 +62,7 @@
       {% endfor %}
     </div>
   </div>
-  
+
   <!-- Footer -->
   <div class="footer">
     <p class="text-center">&copy; 2025 Farming App. All Rights Reserved.</p>

@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Ensure proper scaling on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ feature.name }}</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -38,19 +37,17 @@
   </style>
 </head>
 <body class="bg-light">
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="{{ url_for('home') }}">Farming App</a>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a href="{{ url_for('input_form') }}" class="btn btn-primary">Enter Farm Data</a>
+          <a class="btn btn-primary" href="{{ url_for('input_form') }}">Enter Farm Data</a>
         </li>
       </ul>
     </div>
   </nav>
   
-  <!-- Feature Details Section -->
   <div class="container feature-detail">
     <div class="card mb-4">
       <img src="{{ url_for('static', filename='images/' + feature.image) }}" class="card-img-top" alt="{{ feature.name }}">
@@ -64,7 +61,7 @@
           <div class="info-section">
             <h4>Crop Recommendation</h4>
             {% if extra_info.finalSuggestions %}
-              <h4><span class="highlighted">Your Personalized Crop Suggestions:</span></h4>
+              <h4 class="highlighted">Your Personalized Crop Suggestions:</h4>
               <ul class="list-group">
                 {% for crop in extra_info.finalSuggestions %}
                   <li class="list-group-item">{{ crop }}</li>
@@ -235,7 +232,6 @@
     </div>
   </div>
   
-  <!-- Footer -->
   <div class="footer">
     <p>&copy; 2025 Farming App</p>
   </div>
