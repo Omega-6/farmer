@@ -155,6 +155,11 @@
               <li class="list-group-item"><strong>Humidity:</strong> {{ extra_info.humidity }}%</li>
               <li class="list-group-item"><strong>Wind Speed:</strong> {{ extra_info.wind_speed }} m/s</li>
             </ul>
+            {% if extra_info.personalized_recommendations %}
+              <div class="alert alert-info mt-4">
+                <strong>Personalized Advice:</strong> {{ extra_info.personalized_recommendations }}
+              </div>
+            {% endif %}
           {% endif %}
           
         {% elif feature.name == "Fertilizer & Water Usage Recommendations" %}

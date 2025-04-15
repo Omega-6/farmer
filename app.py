@@ -15,7 +15,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'a_default_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///farmdata.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-    
+
 # Model to store farmer data, including personalized suggestions
 class FarmData(db.Model):
     __tablename__ = "farmdata"
@@ -36,7 +36,6 @@ class FarmData(db.Model):
 
     def __repr__(self):
         return f"<FarmData id={self.id} user_id={self.user_id}>"
-
 
 # Before each request, ensure tables exist and track user via session
 @app.before_request
@@ -140,9 +139,46 @@ basic_crop_recommendation_info = {
 # Default dictionary for fertilizer & water usage recommendations
 fertilizer_water_data = {
     "Peas": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Water regularly during flowering."},
-    "Fava Beans": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist but not waterlogged."}
-    # Add additional crop data as needed...
+    "Fava Beans": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Keep soil moist but not waterlogged."},
+    "Onions": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Provide consistent moisture without waterlogging."},
+    "Leeks": {"NPK": "12-12-12", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Ensure steady moisture for proper growth."},
+    "Garlic": {"NPK": "15-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Water sparingly after planting."},
+    "Greens (Collards,Kale,Mustard)": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Frequent light watering keeps leaves tender."},
+    "Turnips": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Keep soil evenly moist for optimal root development."},
+    "White Potatoes": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Deep irrigation supports tuber growth."},
+    "Cabbage": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Ensure consistent moisture for head development."},
+    "Lettuce": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Frequent watering maintains crisp leaves."},
+    "Radishes": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Low", "tips": "Keep soil moist for rapid development."},
+    "Beets": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Even moisture helps roots swell."},
+    "Carrots": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Water consistently for uniform growth."},
+    "Shallots": {"NPK": "12-12-12", "irrigation": "Drip", "water_needs": "Low", "tips": "Well-draining soil is essential."},
+    "Spinach": {"NPK": "15-10-10", "irrigation": "Sprinkler", "water_needs": "High", "tips": "Regular watering is key, but avoid overwatering."},
+    "Bok Choy": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Maintain consistent moisture for tender leaves."},
+    "Parsley": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Water moderately and keep soil well-drained."},
+    "Swiss Chard": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Even watering prevents tip burn."},
+    "Celery": {"NPK": "12-12-12", "irrigation": "Drip", "water_needs": "High", "tips": "Frequent water is necessary for crisp stalks."},
+    "Watermelons": {"NPK": "8-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Provide deep watering after establishment."},
+    "Winter Squash": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Keep consistent moisture during fruiting."},
+    "Melons": {"NPK": "8-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Deep watering supports larger fruits."},
+    "Summer Squash": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Avoid overwatering to prevent rot."},
+    "Cucumbers": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Keep soil moist for juicy cucumbers."},
+    "Pumpkins": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "High", "tips": "Deep, infrequent watering encourages big fruits."},
+    "Sweet Potatoes": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Ensure even moisture for tuber development."},
+    "Okra": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Regular, moderate water helps avoid rot."},
+    "Chinese Cabbage": {"NPK": "10-15-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Maintain uniform moisture to prevent bitterness."},
+    "Sweet Corn": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Deep watering minimizes kernel cracking."},
+    "Peanuts": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Ensure good drainage to avoid waterlogging."},
+    "Lima Beans": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Keep soil consistently moist."},
+    "Beans (Bush, Pole, Shell, Dried)": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Avoid overwatering to prevent root rot."},
+    "Black-Eyed Peas": {"NPK": "10-20-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Ensure good drainage for optimal growth."},
+    "Eggplant": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Consistent moisture supports robust fruiting."},
+    "Peppers": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Avoid excessive watering to preserve flavor."},
+    "Tomato": {"NPK": "10-10-10", "irrigation": "Drip", "water_needs": "High", "tips": "Deep, regular watering helps prevent cracking."},
+    "Basil": {"NPK": "10-10-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Frequent watering and pruning keep basil thriving."},
+    "Gandules (Pigeon Peas)": {"NPK": "10-20-10", "irrigation": "Drip", "water_needs": "Moderate", "tips": "Maintain even soil moisture for steady growth."},
+    "Collards (Cabbage Family)": {"NPK": "10-15-10", "irrigation": "Sprinkler", "water_needs": "Moderate", "tips": "Consistent moisture supports healthy, leafy greens."}
 }
+
 
 # Default market prices for Market Price Alerts (Static Data)
 default_market_prices = {
@@ -218,7 +254,7 @@ features = [
      "benefit": "Saves money & resources while ensuring healthy crops.",
      "image": "fertilizer_water.png"},
     {"name": "Harvest Time Optimization", 
-     "description": "Recommends best harvesting time based on weather & market trends.",
+     "description": "Utilizes live weather data and current market trends to pinpoint the ideal harvest window for your crops.",
      "benefit": "Maximizes profit & crop quality.",
      "image": "harvest_optimization.png"},
     {"name": "AI-Based Yield Prediction", 
@@ -342,6 +378,7 @@ def feature_details(name):
             rotation_schedule = "No crop history available. Please submit your farm data for personalized crop rotation recommendations."
         extra_info = {"rotation_schedule": rotation_schedule}
     elif feature['name'] == "Real-Time Weather API Integration":
+        # Get city from URL parameter or latest data
         city = request.args.get("city")
         if not city:
             latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
@@ -351,13 +388,25 @@ def feature_details(name):
         response = requests.get(weather_url)
         if response.status_code == 200:
             data = response.json()
+            temperature = data["main"]["temp"]
+            weather_desc = data["weather"][0]["description"].capitalize()
             extra_info = {
                 "city": city,
-                "description": data["weather"][0]["description"].capitalize(),
-                "temperature": data["main"]["temp"],
+                "description": weather_desc,
+                "temperature": temperature,
                 "humidity": data["main"]["humidity"],
                 "wind_speed": data["wind"]["speed"]
             }
+            # Add personalized recommendations based on farm data
+            latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+            personalized_recs = ""
+            if latest_data:
+                if latest_data.soil_moisture is not None and latest_data.soil_moisture < 90 and temperature > 20:
+                    personalized_recs += "Your soil moisture is low and it's warm today; consider extra irrigation. "
+                if latest_data.rainfall is not None and latest_data.rainfall < 10:
+                    personalized_recs += "Low rainfall detected—supplemental watering might be necessary. "
+                # Add further conditions as needed.
+            extra_info["personalized_recommendations"] = personalized_recs
         else:
             extra_info = {"error": "Could not retrieve weather data"}
     elif feature['name'] == "Fertilizer & Water Usage Recommendations":
@@ -366,6 +415,7 @@ def feature_details(name):
         if latest_data and latest_data.suggestions:
             for crop in latest_data.suggestions.split(","):
                 crop = crop.strip()
+
                 if crop in fertilizer_water_data:
                     suggestions.append({ "crop": crop, **fertilizer_water_data[crop] })
         extra_info = {"recommendations": suggestions}
@@ -414,7 +464,6 @@ def feature_details(name):
                 "Okra": 2.50,
                 "Chinese Cabbage": 1.10,
                 "Sweet Corn": 3.25,
-                "Corn": 4.90,
                 "Peanuts": 2.20,
                 "Lima Beans": 2.80,
                 "Beans (Bush, Pole, Shell, Dried)": 2.50,
@@ -431,7 +480,7 @@ def feature_details(name):
                 for crop in suggested_crops:
                     if crop in market_prices:
                         price = market_prices[crop]
-                        if temperature > 68 and price > 0.5:
+                        if temperature > 50 and price > 0.5:
                             recommended_crops.append(crop)
             if recommended_crops:
                 recommendation = "Optimal harvest time for: " + ", ".join(recommended_crops)
@@ -449,7 +498,8 @@ def feature_details(name):
     elif feature['name'] == "AI-Based Yield Prediction":
         prediction = None
         prefill = {}
-        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
+        latest_data = FarmData.query.filter_by(user_id=session.get('user_id')) \
+                                    .order_by(FarmData.submitted_at.desc()).first()
         if latest_data:
             prefill = {
                 "temperature": latest_data.temperature,
@@ -464,9 +514,22 @@ def feature_details(name):
             except (ValueError, TypeError):
                 prediction = "Invalid input. Please enter numeric values."
             else:
-                pred_value = random.uniform(50, 150)
-                prediction = f"Predicted crop yield: {pred_value:.2f} units"
+                # Read the predicted yields CSV file from the 'data' folder.
+                # Ensure the file 'predicted_yields.csv' exists in the 'data' folder.
+                pred_df = pd.read_csv('data/predicted_yields.csv')
+                
+                # Compute the Euclidean distance between the input and each row's conditions.
+                # The CSV must have the columns: 'temperature', 'rainfall', 'soil_ph', and 'predicted_yield'
+                pred_df['distance'] = ((pred_df['temperature'] - temperature) ** 2 + 
+                                    (pred_df['rainfall'] - rainfall) ** 2 + 
+                                    (pred_df['soil_ph'] - soil_ph) ** 2) ** 0.5
+                
+                # Find the row with the minimum distance
+                best_row = pred_df.loc[pred_df['distance'].idxmin()]
+                predicted_yield = best_row['predicted_yield']
+                prediction = f"Predicted crop yield: {predicted_yield:.2f} units"
         extra_info = {"prefill": prefill, "prediction": prediction}
+    
 
     # Patch: Ensure extra_info is a dictionary and ensure market_prices is defined
     if extra_info is None:
@@ -511,7 +574,7 @@ def submit():
     soilPh = float(request.form.get("soil_ph") or 6.5)
     weather_input = float(request.form.get("weather"))
     previousPlantsInput = request.form.get("previousPlants")
-    previousPlants = previousPlantsInput.split(", ")
+    previousPlants = previousPlantsInput.split(", ") if previousPlantsInput else []
     soilNit = int(request.form.get("soilNit"))
     soilPho = int(request.form.get("soilPho"))
     soilPot = int(request.form.get("soilPot"))
