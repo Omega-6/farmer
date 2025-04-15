@@ -201,7 +201,7 @@ features = [
      "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.",
      "benefit": "Prevents soil degradation and boosts long-term productivity.",
      "image": "soil_health.png"},
-    {"name": "Market Price Alerts (Static Data)", 
+    {"name": "Market Price Alerts", 
      "description": "Displays current crop prices from a stored dataset.",
      "benefit": "Helps farmers decide when to sell crops for maximum profit.",
      "image": "market_price_static.png"},
@@ -315,7 +315,7 @@ def feature_details(name):
         else:
             recommendations.append("No soil data available. Please submit your farm data.")
         extra_info = {"recommendations": recommendations}
-    elif feature['name'] == "Market Price Alerts (Static Data)":
+    elif feature['name'] == "Market Price Alerts":
         extra_info = {"market_prices": default_market_prices}
         personalized_suggestions = []
         latest_data = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
@@ -414,6 +414,7 @@ def feature_details(name):
                 "Okra": 2.50,
                 "Chinese Cabbage": 1.10,
                 "Sweet Corn": 3.25,
+                "Corn": 4.90,
                 "Peanuts": 2.20,
                 "Lima Beans": 2.80,
                 "Beans (Bush, Pole, Shell, Dried)": 2.50,
