@@ -429,7 +429,7 @@ def feature_details(name):
                 for crop in s_crops:
                     if crop in m_prices:
                         price = m_prices[crop]
-                        if temp > 50 and price > 0.5:
+                        if temp > 20 and price > 0.5:
                             recs.append(crop)
             if recs:
                 rec_text = "Optimal harvest time for: " + ", ".join(recs)
