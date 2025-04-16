@@ -37,7 +37,7 @@
   </style>
 </head>
 <body class="bg-light">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark">
     <a class="navbar-brand" href="{{ url_for('home') }}">Farming App</a>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
@@ -189,10 +189,10 @@
             {% endif %}
           </div>
           
-        {% elif feature.name == "Harvest Time Optimization" %}
+        {% elif feature.name == "Harvest Optimization" %}
           <hr>
           <div class="info-section">
-            <h4>Harvest Time Optimization</h4>
+            <h4>Harvest Optimization</h4>
             {% if extra_info.harvest_recommendation %}
               <p><strong>Recommendation:</strong> {{ extra_info.harvest_recommendation }}</p>
               <p><strong>City:</strong> {{ extra_info.city }}</p>

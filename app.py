@@ -1,6 +1,7 @@
+
 import os
 import uuid
-import random
+
 import pandas as pd
 import requests
 from flask import Flask, render_template, request, redirect, url_for, session
@@ -12,6 +13,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'a_default_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///farmdata.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
 
 class FarmData(db.Model):
     __tablename__ = "farmdata"
@@ -217,7 +219,7 @@ features = [
     {"name": "Crop Rotation Planning", "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.", "benefit": "Prevents soil depletion and increases productivity.", "image": "crop_rotation.png"},
     {"name": "Real-Time Weather API Integration", "description": "Fetch live weather data from OpenWeatherMap API.", "benefit": "Provides accurate climate data for better crop selection.", "image": "weather_api.png"},
     {"name": "Fertilizer & Water Usage Recommendations", "description": "Suggests the best fertilizer & irrigation methods for each crop.", "benefit": "Saves money & resources while ensuring healthy crops.", "image": "fertilizer_water.png"},
-    {"name": "Harvest Time Optimization", "description": "Utilizes live weather data and current market trends to pinpoint the ideal harvest window for your crops.", "benefit": "Maximizes profit & crop quality.", "image": "harvest_optimization.png"},
+    {"name": "Harvest Optimization", "description": "Utilizes live weather data and current market trends to pinpoint the ideal harvest window for your crops.", "benefit": "Maximizes profit & crop quality.", "image": "harvest_optimization.png"},
     {"name": "AI-Based Yield Prediction", "description": "Uses machine learning to predict crop yield based on weather, soil, and planting time.", "benefit": "Helps farmers make data-driven decisions to improve productivity.", "image": "ai_yield.png"}
 ]
 
@@ -366,7 +368,7 @@ def feature_details(name):
                 if crop in fertilizer_water_data:
                     rec_list.append({ "crop": crop, **fertilizer_water_data[crop] })
         extra_info = {"recommendations": rec_list}
-    elif feature['name'] == "Harvest Time Optimization":
+    elif feature['name'] == "Harvest Optimization":
         latest = FarmData.query.filter_by(user_id=session.get('user_id')).order_by(FarmData.submitted_at.desc()).first()
         if latest and latest.suggestions:
             s_crops = [c.strip() for c in latest.suggestions.split(",")]
@@ -626,3 +628,4 @@ def submission(data_id):
 
 if __name__ == "__main__":
     app.run(debug=True)
+    
