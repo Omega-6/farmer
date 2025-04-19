@@ -56,7 +56,7 @@
         <p class="card-text"><strong>Description:</strong> {{ feature.description }}</p>
         <p class="card-text"><strong>Benefit:</strong> {{ feature.benefit }}</p>
         
-        {% if feature.name == "Basic Crop Recommendation" %}
+        {% if feature.name == "Crop Recommendation" %}
           <hr>
           <div class="info-section">
             <h4>Crop Recommendation</h4>
@@ -140,7 +140,7 @@
             {% endif %}
           </div>
           
-        {% elif feature.name == "Real-Time Weather API Integration" %}
+        {% elif feature.name == "Real-Time Weather" %}
           <hr>
           {% if extra_info.error %}
             <div class="alert alert-danger">{{ extra_info.error }}</div>
