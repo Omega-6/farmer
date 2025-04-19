@@ -217,7 +217,7 @@ features = [
     {"name": "Soil Health Monitoring", "description": "Allows farmers to input soil fertility levels and suggests ways to improve soil.", "benefit": "Prevents soil degradation and boosts long-term productivity.", "image": "soil_health.png"},
     {"name": "Market Price Alerts", "description": "Displays current crop prices from a stored dataset.", "benefit": "Helps farmers decide when to sell crops for maximum profit.", "image": "market_price_static.png"},
     {"name": "Crop Rotation Planning", "description": "Suggests a rotation schedule to improve soil fertility & reduce pests.", "benefit": "Prevents soil depletion and increases productivity.", "image": "crop_rotation.png"},
-    {"name": "Real-Time Weather ", "description": "Fetch live weather data from OpenWeatherMap.", "benefit": "Provides accurate climate data for better crop selection.", "image": "weather_api.png"},
+    {"name": "Real-Time Weather", "description": "Fetch live weather data from OpenWeatherMap.", "benefit": "Provides accurate climate data for better crop selection.", "image": "weather_api.png"},
     {"name": "Fertilizer & Water Usage Recommendations", "description": "Suggests the best fertilizer & irrigation methods for each crop.", "benefit": "Saves money & resources while ensuring healthy crops.", "image": "fertilizer_water.png"},
     {"name": "Harvest Optimization", "description": "Utilizes live weather data and current market trends to pinpoint the ideal harvest window for your crops.", "benefit": "Maximizes profit & crop quality.", "image": "harvest_optimization.png"},
     {"name": "AI-Based Yield Prediction", "description": "Uses machine learning to predict crop yield based on weather, soil, and planting time.", "benefit": "Helps farmers make data-driven decisions to improve productivity.", "image": "ai_yield.png"}
@@ -341,6 +341,7 @@ def feature_details(name):
         if r.status_code == 200:
             d = r.json()
             temp = d["main"]["temp"]
+            print("temp*****",temp)
             w_desc = d["weather"][0]["description"].capitalize()
             extra_info = {
                 "city": city,
